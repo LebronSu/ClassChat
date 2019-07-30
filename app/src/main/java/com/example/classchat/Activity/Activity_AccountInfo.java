@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -31,6 +32,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.classchat.R;
 import com.example.classchat.Util.Util_NetUtil;
+import com.example.classchat.Util.Util_PictureTool;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -89,6 +91,9 @@ public class Activity_AccountInfo extends AppCompatActivity {
     private String userName;
     private String imageUrl;
 
+    // 广播发射器
+    private LocalBroadcastManager localBroadcastManager;
+
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler(){
         @Override
@@ -96,6 +101,8 @@ public class Activity_AccountInfo extends AppCompatActivity {
             switch (msg.what){
                 case SAVE_SUCCESS:
                     Toast.makeText(Activity_AccountInfo.this,"保存成功！",Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent("com.example.theclasschat_UPDATE_ACCOUNTINFO");
+                    localBroadcastManager.sendBroadcast(intent);
                     loadingUpload.dismiss();
                     break;
                 case SAVE_FAILED:
@@ -131,7 +138,8 @@ public class Activity_AccountInfo extends AppCompatActivity {
 
         tvName.setText(userName);
         tvId.setText(userId);
-        Glide.with(this).load("http://106.12.105.160/default_ico.png").into(headimage);
+        Glide.with(this).load(imageUrl).into(headimage);
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
 
         /*
         为头像布局设置监听器
@@ -327,6 +335,8 @@ public class Activity_AccountInfo extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     String newName = data.getStringExtra("name_return");
                     tvName.setText(newName);
+                    Intent intent = new Intent("com.example.theclasschat_UPDATE_ACCOUNTINFO");
+                    localBroadcastManager.sendBroadcast(intent);
                 }
         }
     }
@@ -367,25 +377,10 @@ public class Activity_AccountInfo extends AppCompatActivity {
         Bitmap bitmap = BitmapFactory.decodeStream(input, null, bitmapOptions);
         input.close();
 
-        return compressImage(bitmap);//再进行质量压缩
+        return Util_PictureTool.compressImage(bitmap);//再进行质量压缩
     }
 
-    public Bitmap compressImage(Bitmap image) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
-        int options = 100;
-        while (baos.toByteArray().length / 1024 > 500) {  //循环判断如果压缩后图片是否大于100kb,大于继续压缩
-            baos.reset();//重置baos即清空baos
-            //第一个参数 ：图片格式 ，第二个参数： 图片质量，100为最高，0为最差  ，第三个参数：保存压缩后的数据的流
-            image.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options，把压缩后的数据存放到baos中
-            options -= 10;//每次都减少10
-            if (options<=0)
-                break;
-        }
-        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());//把压缩后的数据baos存放到ByteArrayInputStream中
-        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);//把ByteArrayInputStream数据生成图片
-        return bitmap;
-    }
+
 
     private void sendImageToServer() {
         /*
@@ -402,7 +397,7 @@ public class Activity_AccountInfo extends AppCompatActivity {
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("userId", userId)
-                .addFormDataPart("icon", "head_image", RequestBody.create(MediaType.parse("image/jpeg"), compressImage(headbitmap, "head")))
+                .addFormDataPart("icon", "head_image", RequestBody.create(MediaType.parse("image/jpeg"), Util_PictureTool.compressImage(headbitmap, "new_head")))
                 .build();   //构建请求体
 
         Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8081/changeico", requestBody, new okhttp3.Callback() {
@@ -429,34 +424,4 @@ public class Activity_AccountInfo extends AppCompatActivity {
         });
     }
 
-    public File compressImage(Bitmap bitmap,String name) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
-        int options = 100;
-        while (baos.toByteArray().length / 1024 > 300) {  //循环判断如果压缩后图片是否大于500kb,大于继续压缩
-            baos.reset();//重置baos即清空baos
-            options -= 10;//每次都减少10
-            bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中
-            long length = baos.toByteArray().length;
-        }
-
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-
-        File file = new File(Environment.getExternalStorageDirectory(), name + ".jpg");
-        try {
-            FileOutputStream fos = new FileOutputStream(file);
-            try {
-                fos.write(baos.toByteArray());
-                fos.flush();
-                fos.close();
-            } catch (IOException e) {
-
-                e.printStackTrace();
-            }
-        } catch (FileNotFoundException e) {
-
-            e.printStackTrace();
-        }
-        return file;
-    }
 }

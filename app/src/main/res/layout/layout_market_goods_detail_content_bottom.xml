@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.hankkin.library.NoScrollListView
+            android:divider="@color/grey_normal_bg"
+            android:dividerHeight="@dimen/spacing_tiny"
+            android:id="@+id/nlv_good_detial_imgs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+
+        <!--没有这个不能上拉-->
+        <TextView
+            android:id="@+id/duummy"
+            android:padding="@dimen/spacing_small"
+            android:text="  "
+            style="@style/whiteTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <!--使照片完全显示防止按钮遮挡-->
+        <TextView
+            android:text="  "
+            android:padding="@dimen/spacing_small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+    </LinearLayout>
+
+</ScrollView>

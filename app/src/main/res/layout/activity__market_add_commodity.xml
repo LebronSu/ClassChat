@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff2f2f2"
+    tools:context=".Activity.Activity_Market_AddCommodity"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/top_nav">
+
+        <ImageView
+            android:id="@+id/iv_market_add_goods_back"
+            android:layout_width="0dp"
+            android:layout_weight="0.15"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:src="@drawable/ic_commen_back" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.7"
+            android:gravity="center"
+            android:text="发布商品"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.15"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="  "
+            android:textColor="#404040"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="商品名称:"
+            android:textSize="15sp"
+            android:padding="18dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:textStyle="bold">
+        </TextView>
+
+        <EditText
+            android:id="@+id/et_market_add_name"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:textSize="15sp"
+            android:hint="标题 品类品牌型号都是买家喜欢搜索的"
+            android:textAlignment="center">
+        </EditText>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="商品简介:"
+            android:textSize="15sp"
+            android:padding="18dp"
+            android:textStyle="bold">
+        </TextView>
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:textSize="15sp"
+            android:id="@+id/et_market_add_intro"
+            android:hint="商品功能 成色情况"
+            android:textAlignment="center"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+        </EditText>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="商品定价:"
+            android:textSize="15sp"
+            android:padding="18dp"
+            android:textStyle="bold">
+        </TextView>
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:inputType="numberDecimal"
+            android:layout_weight="1"
+            android:textSize="20sp"
+            android:background="@null"
+            android:id="@+id/et_market_add_price"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+        </EditText>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="18dp"
+            android:text="商\n\n品\n\n详\n\n情"
+            android:textSize="15sp"
+            android:layout_gravity="center"
+            android:textStyle="bold">
+        </TextView>
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:textSize="15sp"
+            android:enabled="true"
+            android:gravity="top"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:id="@+id/et_market_add_detail"
+            android:background="@null"
+            android:hint="    描述宝贝的转手原因、入手渠道和使用感受"
+            android:maxLines="10">
+        </EditText>
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:background="#fff2f2f2">
+
+        <ImageView
+            android:id="@+id/iv_market_add_itemPic1"
+            android:layout_marginLeft="3dp"
+            android:layout_width="0dp"
+            android:layout_weight="0.3"
+            android:layout_height="140dp"
+            android:background="#ffffff"
+            android:src="@drawable/ic_marke_addmark"
+            android:scaleType="center"/>
+
+        <ImageView
+            android:id="@+id/iv_market_add_itemPic2"
+            android:layout_marginLeft="6dp"
+            android:layout_width="0dp"
+            android:layout_weight="0.3"
+            android:layout_height="140dp"
+            android:background="#ffffff"
+            android:src="@drawable/ic_marke_addmark"
+            android:scaleType="center"/>
+
+        <ImageView
+            android:id="@+id/iv_market_add_itemPic3"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="3dp"
+            android:layout_width="0dp"
+            android:layout_weight="0.3"
+            android:layout_height="140dp"
+            android:background="#ffffff"
+            android:src="@drawable/ic_marke_addmark"
+            android:scaleType="center"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/b_market_add_confirm"
+            android:layout_marginRight="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/xml_con_b_round"
+            android:text="确认发布"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>

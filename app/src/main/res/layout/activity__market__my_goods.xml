@@ -1,0 +1,70 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Activity.Activity_Market_MyGoods"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/top_nav">
+
+        <ImageView
+            android:id="@+id/iv_market_my_goods_back"
+            android:layout_width="0dp"
+            android:layout_weight="0.15"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:src="@drawable/ic_commen_back" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.7"
+            android:gravity="center"
+            android:text="我的商品"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.15"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="  "
+            android:textColor="#404040"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/ll_Market_Searchbar_Background"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/theme"
+            android:orientation="horizontal">
+        </LinearLayout>
+
+        <com.mancj.materialsearchbar.MaterialSearchBar
+            android:id="@+id/my_goods_searchBar"
+            style="@style/MaterialSearchBarLight"
+            android:layout_width="match_parent"
+            android:layout_marginTop="7dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="5dp"
+            app:mt_hint="搜索我发布的商品"
+            app:mt_placeholderColor="@color/theme" />
+
+    </RelativeLayout>
+
+
+    <com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView
+        android:id="@+id/my_goods_pullLoadMoreRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

@@ -1,1 +1,1 @@
-include ':app', ':library_activity_timetable', ':library_cache'
+include ':app', ':library_activity_timetable', ':library_cache', ':library'

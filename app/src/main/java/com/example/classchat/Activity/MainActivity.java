@@ -7,23 +7,26 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.WindowManager;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.example.classchat.Fragment.Fragment_ClassBox;
 import com.example.classchat.Fragment.Fragment_Forum;
 import com.example.classchat.Fragment.Fragment_SelfInformationCenter;
-import com.example.classchat.Fragment.Fragment_Shopping;
+import com.example.classchat.Fragment.Fragment_Market;
 import com.example.classchat.R;
-import com.example.classchat.Util.SharedUtil;
 import com.example.classchat.Util.Util_NetUtil;
+import com.github.nisrulz.sensey.Sensey;
+import com.sdsmdg.tastytoast.TastyToast;
 
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,19 +44,38 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView mBottomNavigationView;
     private int lastIndex;
 
-    List<Fragment> mFragments;
-    AlertDialog builder=null;
-
     private String correctId;
     private boolean isAuthentation;
     private String password;
     private String imageUrl;
     private String nickName;
 
+    private FragmentManager manager = getSupportFragmentManager();
+    private long firstTime;// 记录点击返回时第一次的时间毫秒值
+
+    List<Fragment> mFragments;
+    AlertDialog builder=null;
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if(keyCode == KeyEvent.KEYCODE_BACK){
+            if (manager.getBackStackEntryCount() != 0) {
+                manager.popBackStack();
+            } else {
+                exitApp(2000);// 退出应用
+            }
+        }
+        return true;
+    }
+
+
+    private void exitApp(long timeInterval) {
+        // 第一次肯定会进入到if判断里面，然后把firstTime重新赋值当前的系统时间
+        // 然后点击第二次的时候，当点击间隔时间小于2s，那么退出应用；反之不退出应用
+        if (System.currentTimeMillis() - firstTime >= timeInterval) {
+            TastyToast.makeText(this, "再按一次退出程序", TastyToast.LENGTH_SHORT,TastyToast.WARNING).show();
+            firstTime = System.currentTimeMillis();
+        } else {
             builder = new AlertDialog.Builder(MainActivity.this)
                     .setTitle("温馨提示：")
                     .setMessage("您是否要退出程序？")
@@ -72,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }).show();
         }
-        return true;
     }
 
 
@@ -82,11 +103,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Intent intent = getIntent();
         correctId = "18801356149";
+
         getUserInfo();
 
 //        initView();
         initBottomNavigation();
         initData();
+
+        //防止在商城搜索时导航栏上移到键盘上方
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
     }
 
 //    public void initView() {
@@ -99,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         mFragments = new ArrayList<>();
         mFragments.add(new Fragment_ClassBox());
         mFragments.add(new Fragment_Forum());
-        mFragments.add(new Fragment_Shopping());
+        mFragments.add(new Fragment_Market());
         mFragments.add(new Fragment_SelfInformationCenter());
         // 初始化展示MessageFragment
         setFragmentPosition(0);
@@ -147,6 +172,30 @@ public class MainActivity extends AppCompatActivity {
         ft.commitAllowingStateLoss();
     }
 
+    //用于手势监听
+    @Override public boolean dispatchTouchEvent(MotionEvent event) {
+        // Setup onTouchEvent for detecting type of touch gesture
+        Sensey.getInstance().setupDispatchTouchEvent(event);
+        return super.dispatchTouchEvent(event);
+    }
+
+    @Override
+    protected void onResume() {
+        /**
+         * 从购物车跳转到商城首页
+         */
+        int id = getIntent().getIntExtra("id", 0);
+        if (id == 1) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.ll_frameLayout,new Fragment_Market())
+                    .addToBackStack(null)
+                    .commit();
+        }
+
+        super.onResume();
+    }
+
     public String getId() {
         return correctId;
     }
@@ -180,6 +229,7 @@ public class MainActivity extends AppCompatActivity {
                 nickName = jsonObject.getString("nickname");
                 imageUrl = jsonObject.getString("ico");
                 isAuthentation = Boolean.parseBoolean(jsonObject.getString("authentationstatus"));
+
             }
         });
     }
