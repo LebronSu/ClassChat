@@ -378,6 +378,9 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                     case R.id.menu_add_course:
                         addSubject();
                         break;
+                    case R.id.menu_import_classes:
+                        importClass();
+                        break;
                     case R.id.menu_shownotthisweek:
                         showNonThisWeek();
                         break;
@@ -491,6 +494,12 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     protected void hideWeekView() {
         mWeekView.isShow(false);
     }
+
+    //TODO 导入课表的函数
+    /**
+     * 教务导入课表
+     */
+    protected  void importClass(){}
 
 
     /**

@@ -222,7 +222,7 @@ public class Activity_AddCourse extends AppCompatActivity {
                     end_=Integer.parseInt(end.getText().toString());
                     step=end_-start_+1;
                     //若结束节次小于开始节次
-                    if (end_ < start_) { builder2.show(); }
+                    if (end_ < start_||end_>12||start_<1) { builder2.show(); }
                     else if(dayOfWeek_<1||dayOfWeek_>7){builder3.show();}
                     else {
                         MySubject item = new MySubject( course_, room_, teacher_, weeksnum, start_, step, dayOfWeek_, null,0);

@@ -8,6 +8,11 @@
         android:title="添加课程"
         app:showAsAction="always" />
     <item
+        android:id="@+id/menu_import_classes"
+        android:icon="@drawable/icon_purple_round5"
+        android:title="导入课表"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/menu_shownotthisweek"
         android:icon="@drawable/icon_purple_round2"
         android:title="显示非本周课程"

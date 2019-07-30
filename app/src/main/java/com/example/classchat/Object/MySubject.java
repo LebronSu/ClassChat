@@ -163,4 +163,7 @@ public class MySubject implements ScheduleEnable {
 		return "{'id':'"+id+"', 'name':'"+name+"', 'teacher':'"+teacher+"', 'room':'"+room+"', 'stringweeklist':'"+stringweekList+"', 'start':'"+start+"', 'step':'"+step+"', 'day':'"+day+"', 'messagecount':'"+messageCount+"'}";
 	}
 
+    public void setWeekList(List<Integer> weeklist) {
+		this.weekList = weeklist;
+    }
 }

@@ -241,7 +241,7 @@ public class Activity_SearchAddCourse extends AppCompatActivity {
                     start_=Integer.parseInt(start.getText().toString());
                     end_=Integer.parseInt(end.getText().toString());
                     step=end_-start_+1;
-                    if(end_<start_) {builder2.show();}
+                    if(end_<start_||end_>12||start_<1) {builder2.show();}
                     else if(dayOfWeek_<1||dayOfWeek_>7){builder3.show();}
                     else {
                         final MySubject item = new MySubject( course_name, room_, teacher_name, weeksnum, start_, step, dayOfWeek_,id,0);
