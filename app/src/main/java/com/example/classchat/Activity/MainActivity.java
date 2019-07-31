@@ -102,9 +102,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Intent intent = getIntent();
-        correctId = "18801356149";
+        correctId = intent.getStringExtra("userId");
+        isAuthentation = intent.getBooleanExtra("userAuthentationStatus", false);
+        nickName = intent.getStringExtra("userName");
+        imageUrl = intent.getStringExtra("userImage");
+        password = intent.getStringExtra("userPassword");
 
-        getUserInfo();
 
 //        initView();
         initBottomNavigation();
@@ -210,27 +213,5 @@ public class MainActivity extends AppCompatActivity {
 
     public String getPassword() {
         return password;
-    }
-
-    private void getUserInfo() {
-        RequestBody requestBody = new FormBody.Builder()
-                .add("userId", correctId)
-                .build();
-
-        Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8081/getuserinfo", requestBody, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                JSONObject jsonObject = JSON.parseObject(response.body().string());
-                nickName = jsonObject.getString("nickname");
-                imageUrl = jsonObject.getString("ico");
-                isAuthentation = Boolean.parseBoolean(jsonObject.getString("authentationstatus"));
-
-            }
-        });
     }
 }
