@@ -52,6 +52,7 @@ public class Activity_AddSearchCourse extends AppCompatActivity {
     private List<AddCourseDataBase> items = new ArrayList<>();
 
     private String userId;
+    private String proUni;
 
     private static final int GET = 1;
 
@@ -74,6 +75,7 @@ public class Activity_AddSearchCourse extends AppCompatActivity {
 
         Intent intent = getIntent();
         userId = intent.getStringExtra("userId");
+        proUni = intent.getStringExtra("proUni");
 
 
         //绑定控件
@@ -119,7 +121,7 @@ public class Activity_AddSearchCourse extends AppCompatActivity {
                 //todo s.toString()为输入的关键字，这里需要写把关键字发给数据库和返回一个包含(id，课程名，老师，专业)
                 // （固定顺序）的二维string数组的函数，数组给hoolder赋值；
                 final RequestBody requestBody = new FormBody.Builder()
-                        .add("tablename", "SCUT_CS")
+                        .add("tablename", proUni)
                         .add("condition", s.toString())
                         .build();
 

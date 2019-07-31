@@ -12,6 +12,7 @@ import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -20,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
@@ -28,6 +30,7 @@ import com.example.classchat.Object.Object_Commodity;
 import com.example.classchat.Object.Object_Commodity_Shoppingcart;
 import com.example.classchat.R;
 import com.example.classchat.Util.Util_ScreenShot;
+
 import com.github.nisrulz.sensey.Sensey;
 import com.github.nisrulz.sensey.TouchTypeDetector;
 import com.hankkin.library.GradationScrollView;
@@ -38,6 +41,9 @@ import com.hankkin.library.StatusBarUtil;
 import com.hch.thumbsuplib.ThumbsUpCountView;
 import com.joanzapata.android.BaseAdapterHelper;
 import com.joanzapata.android.QuickAdapter;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +56,7 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
     private RelativeLayout llTitle;
     private LinearLayout llOffset;
     private ScrollViewContainer container;
-    private GradationScrollView scrollView;
+    private  GradationScrollView scrollView;
     private String itemID, itemName, itemDetailInfo, itemPic1, itemPic2, itemPic3,ownerID;
     private Double itemPrice;
     private Boolean isThumbed;
@@ -157,42 +163,50 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
         //isThumbed = intent.getBooleanExtra("isThumbed");
 
         //初始化控件
+
         init();
 
-//        /**
-//         * 判断加入购物车按钮的状态
-//         */
-//        SharedPreferences sp = getSharedPreferences("shopping_cart_cache" , MODE_MULTI_PROCESS);
-//        String jsonString = sp.getString("cart_information","error");
-//        SharedPreferences.Editor editor = sp.edit();
-//        List<Object_Commodity_Shoppingcart> datas = new ArrayList<>();
-//        if(!jsonString.equals("error")){
-//            List<Object_Commodity> commodityList = JSON.parseObject(jsonString , new TypeReference<List<Object_Commodity>>(){});
-//            // 把缓存里的对象取出
-//            for(Object_Commodity object_commodity: commodityList) {
-//                Object_Commodity_Shoppingcart object_commodity_shoppingcart = new Object_Commodity_Shoppingcart();
-//                object_commodity_shoppingcart.setImageList(object_commodity.getImageList());
-//                object_commodity_shoppingcart.setItemID(object_commodity.getItemID());
-//                object_commodity_shoppingcart.setItemName(object_commodity.getItemName());
-//                object_commodity_shoppingcart.setOwnerID(object_commodity.getOwnerID());
-//                object_commodity_shoppingcart.setPrice(object_commodity.getPrice());
-//                datas.add(object_commodity_shoppingcart);
-//            }
-//            /**
-//             * 判断是否已添加
-//             */
-//            boolean isAdded = false ;
-//            if(datas != null){
-//                for(int i = 0 ; i<datas.size() ; i++){
-//                    if((item.getItemID()).equals(datas.get(i).getItemID())){
-//                        isAdded = true;
-//                    }
-//                }
-//            }
-//            if(isAdded == true){
-//                addToShopppingCart.setText("已加入购物车");
-//                addToShopppingCart.setOnClickListener(new View.OnClickListener() {
-//        }
+        /**
+         * 判断加入购物车按钮的状态
+         */
+        SharedPreferences sp = getSharedPreferences("shopping_cart_cache" , MODE_MULTI_PROCESS);
+        String jsonString = sp.getString("cart_information","error");
+        SharedPreferences.Editor editor = sp.edit();
+        List<Object_Commodity_Shoppingcart> datas = new ArrayList<>();
+        if(!jsonString.equals("error")) {
+            List<Object_Commodity> commodityList = JSON.parseObject(jsonString, new TypeReference<List<Object_Commodity>>() {
+            });
+            // 把缓存里的对象取出
+            for (Object_Commodity object_commodity : commodityList) {
+                Object_Commodity_Shoppingcart object_commodity_shoppingcart = new Object_Commodity_Shoppingcart();
+                object_commodity_shoppingcart.setImageList(object_commodity.getImageList());
+                object_commodity_shoppingcart.setItemID(object_commodity.getItemID());
+                object_commodity_shoppingcart.setItemName(object_commodity.getItemName());
+                object_commodity_shoppingcart.setOwnerID(object_commodity.getOwnerID());
+                object_commodity_shoppingcart.setPrice(object_commodity.getPrice());
+                datas.add(object_commodity_shoppingcart);
+            }
+            /**
+             * 判断是否已添加
+             */
+            boolean isAdded = false;
+            if (datas != null) {
+                for (int i = 0; i < datas.size(); i++) {
+                    if ((item.getItemID()).equals(datas.get(i).getItemID())) {
+                        isAdded = true;
+                    }
+                }
+            }
+            if (isAdded == true) {
+                addToShopppingCart.setText("已加入购物车");
+                addToShopppingCart.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(getApplicationContext(), "商品已经加入购物车了哦", Toast.LENGTH_LONG);
+                    }
+                });
+            }
+        }
 
         //透明状态栏
         StatusBarUtil.setTranslucentForImageView(this,llOffset);
@@ -250,7 +264,7 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
 
                 List<Object_Commodity_Shoppingcart> datas = new ArrayList<>();
 
-                if(!jsonString.equals("error")){
+                if(!jsonString.equals("error") && !jsonString.equals("[{}]")){
                     List<Object_Commodity> commodityList = JSON.parseObject(jsonString , new TypeReference<List<Object_Commodity>>(){});
                     // 把缓存里的对象取出
                     for(Object_Commodity object_commodity: commodityList) {
@@ -283,10 +297,14 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
                         editor.putString("cart_information", JSON.toJSONString(commodityList)).commit();
                     }
                 }else{
+                    editor.clear().commit();
                     List<Object_Commodity> list = new ArrayList<>();
                     list.add(item);
-                    editor.putString("cart_information", JSON.toJSONString(list)).commit();
+                    editor.putString("cart_information",JSON.toJSONString(list)).commit();
                 }
+
+                addToShopppingCart.setText("已加入购物车");
+                
 //                List<JSONObject> jsonList = JSON.parseObject(jsonString , new TypeReference<List<JSONObject>>(){});
 //                JSONObject object = new JSONObject();
 //                try {
@@ -388,7 +406,7 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
         imgsUrl.add(itemPic1);
         imgsUrl.add(itemPic2);
         imgsUrl.add(itemPic3);
-        imgAdapter = new QuickAdapter<String>(this, R.layout.adapter_good_detail_imgs) {
+        imgAdapter = new QuickAdapter<String>(this,R.layout.adapter_good_detail_imgs) {
             @Override
             protected void convert(BaseAdapterHelper helper, String item) {
                 ImageView iv = helper.getView(R.id.iv_adapter_good_detail_img);

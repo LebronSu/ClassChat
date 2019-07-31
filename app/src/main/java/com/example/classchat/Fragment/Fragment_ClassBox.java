@@ -28,7 +28,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONObject;
 import com.example.classchat.Activity.Activity_AddSearchCourse;
+import com.example.classchat.Activity.Activity_AutoPullCourseFromWeb;
 import com.example.classchat.Activity.MainActivity;
 import com.example.classchat.Object.MySubject;
 import com.example.classchat.R;
@@ -79,6 +81,15 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     //学生ID
     private String userId;
 
+    //学生专业
+    private String proUni;
+
+    //学生真实姓名
+    private String realName;
+
+    //学生是否实名认证
+    private Boolean isAuthentation;
+
     //对话框
     Dialog coursedetail_dialog;
 
@@ -91,9 +102,8 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     //缓存
     private String mClassBoxData = "";
 
-    //广播接收
-    private IntentFilter intentFilter;
     private UPDATEcastReceiver updatereceiver;
+    private UpdateStateReceiver updateStateReceiver;
     private LocalBroadcastManager localBroadcastManager;
 
     private Context mcontext;
@@ -108,6 +118,9 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         mcontext = this.getActivity();
         MainActivity mainActivity = (MainActivity)getActivity();
         userId = mainActivity.getId();
+        isAuthentation = mainActivity.getAuthentation();
+        realName = mainActivity.getRealName();
+        proUni = mainActivity.getProUni();
         moreButton =(ImageButton)getActivity().findViewById(R.id.id_more);
         moreButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -122,11 +135,15 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
 
         //广播接收
         localBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
-        intentFilter = new IntentFilter();
+        //广播接收
+        IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("com.example.broadcasttest.LOCAL_BROADCAST");
         updatereceiver = new UPDATEcastReceiver();
-        localBroadcastManager.registerReceiver(updatereceiver,intentFilter);
-
+        localBroadcastManager.registerReceiver(updatereceiver, intentFilter);
+        IntentFilter intentFilter1 = new IntentFilter();
+        intentFilter1.addAction("com.example.broadcasttest.UPDATE_STATE");
+        updateStateReceiver = new UpdateStateReceiver();
+        localBroadcastManager.registerReceiver(updateStateReceiver, intentFilter1);
         initClassBoxData();
 
         initTimetableView();
@@ -376,15 +393,20 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.menu_add_course:
-                        addSubject();
+                        if (isAuthentation)
+                            addSubject();
+                        else
+                            Toast.makeText(getContext(), "请先实名认证",Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.menu_import_classes:
-                        importClass();
+                        if (isAuthentation)
+                            importClass();
+                        else
+                            Toast.makeText(getContext(), "请先实名认证", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.menu_shownotthisweek:
                         showNonThisWeek();
                         break;
-
                     case R.id.menu_hidenotthisweek:
                         hideNonThisWeek();
                         break;
@@ -452,6 +474,7 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     protected void addSubject() {
         Intent add = new Intent(getActivity(), Activity_AddSearchCourse.class);
         add.putExtra("userId",userId);
+        add.putExtra("proUni", proUni);
         startActivity(add);
     }
 
@@ -499,7 +522,12 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     /**
      * 教务导入课表
      */
-    protected  void importClass(){}
+    protected  void importClass() {
+        Intent add = new Intent(getActivity(), Activity_AutoPullCourseFromWeb.class);
+        add.putExtra("userId",userId);
+        add.putExtra("proUni", proUni);
+        startActivity(add);
+    }
 
 
     /**
@@ -519,9 +547,8 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     /*
     * 广播
     * */
-    class
 
-    UPDATEcastReceiver extends BroadcastReceiver {
+    class UPDATEcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent){
 
@@ -541,9 +568,29 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
             }
 
             initTimetableView();
+        }
+    }
 
-            System.out.println("接收陈宫");
+    class UpdateStateReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent){
+            RequestBody requestBody = new FormBody.Builder()
+                    .add("userId", userId)
+                    .build();
 
+            Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8081/getuserinfo", requestBody, new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    JSONObject jsonObject = JSON.parseObject(response.body().string());
+                    realName = jsonObject.getString("realname");
+                    proUni = jsonObject.getString("tablename");
+                    isAuthentation = Boolean.parseBoolean(jsonObject.getString("authentationstatus"));
+                }
+            });
         }
     }
 

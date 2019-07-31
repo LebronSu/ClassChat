@@ -16,7 +16,7 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/back_from_addCourse_button"
+            android:id="@+id/back_from_authentation_button"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginLeft="3dp"
@@ -66,29 +66,29 @@
                 android:background="@null"/>
 
         </LinearLayout>
-        <LinearLayout
-            android:layout_marginTop="2dp"
-            android:layout_width="match_parent"
-            android:background="#fff"
-            android:orientation="horizontal"
-            android:layout_height="50dp">
-            <TextView
-                android:layout_marginLeft="20dp"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="身份证号"
-                android:gravity="center"
-                android:textSize="20sp"/>
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="20dp"
-                android:id="@+id/auth_number"
-                android:textSize="20sp"
-                android:hint="请填写身份证号"
-                android:background="@null"/>
+        <!--<LinearLayout-->
+            <!--android:layout_marginTop="2dp"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:background="#fff"-->
+            <!--android:orientation="horizontal"-->
+            <!--android:layout_height="50dp">-->
+            <!--<TextView-->
+                <!--android:layout_marginLeft="20dp"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:text="身份证号"-->
+                <!--android:gravity="center"-->
+                <!--android:textSize="20sp"/>-->
+            <!--<EditText-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:layout_marginLeft="20dp"-->
+                <!--android:id="@+id/auth_number"-->
+                <!--android:textSize="20sp"-->
+                <!--android:hint="请填写身份证号"-->
+                <!--android:background="@null"/>-->
 
-        </LinearLayout>
+        <!--</LinearLayout>-->
 
 
     </LinearLayout>

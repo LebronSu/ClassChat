@@ -56,6 +56,8 @@ public class Activity_Enter extends AppCompatActivity implements View.OnClickLis
     private boolean isAuthentation;
     private String imageUrl;
     private String nickName;
+    private String proUni;
+    private String realName;
 
     // 声明一个数组permissions，将需要的权限都放在里面
     String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS};
@@ -91,6 +93,8 @@ public class Activity_Enter extends AppCompatActivity implements View.OnClickLis
                     intent.putExtra("userId", editPerson.getText().toString());
                     intent.putExtra("userImage", imageUrl);
                     intent.putExtra("userAuthentationStatus", isAuthentation);
+                    intent.putExtra("proUni", proUni);
+                    intent.putExtra("realName", realName);
                     loadingForLogin.dismiss();
                     startActivity(intent);
                     finish();
@@ -227,15 +231,18 @@ public class Activity_Enter extends AppCompatActivity implements View.OnClickLis
             public void onResponse(Call call, Response response) throws IOException {
                 // 得到服务器返回的具体内容
                 Message message = new Message();
-                if (response.body().string().equals("ERROR"))
+                String responsedata = response.body().string();
+                if (responsedata.equals("ERROR"))
                 {
                     message.what = LOGIN_FAILED;
                     handler.sendMessage(message);
                 } else {
-                    JSONObject jsonObject = JSON.parseObject(response.body().string());
+                    JSONObject jsonObject = JSON.parseObject(responsedata);
                     nickName = jsonObject.getString("nickname");
                     imageUrl = jsonObject.getString("ico");
                     isAuthentation = Boolean.parseBoolean(jsonObject.getString("authentationstatus"));
+                    realName = jsonObject.getString("realname");
+                    proUni = jsonObject.getString("university") + "_" + jsonObject.getString("school");
                     message.what = LOGIN_SUCCESS;
                     handler.sendMessage(message);
                 }

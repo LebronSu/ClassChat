@@ -112,6 +112,7 @@ public class Fragment_SelfInformationCenter extends Fragment {
         correctId = activity.getId();
         name = activity.getNickName();
         imageUrl = activity.getImageUrl();
+        isAuthentation = activity.getAuthentation();
 
         //加载数据和图片
         textViewforId.setText(correctId);
@@ -162,12 +163,12 @@ public class Fragment_SelfInformationCenter extends Fragment {
         linearLayoutforRenzheng.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(getActivity(), Activity_IdAuthentation.class);
-//                intent.putExtra("id",correctId);
-//                if(isAuthentation == 1)
-//                    startActivity(intent);
-//                else
-//                    Toast.makeText(getActivity(),"您已经实名认证过了",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), Activity_IdAuthentation.class);
+                intent.putExtra("userId",correctId);
+                if(!isAuthentation)
+                    startActivity(intent);
+                else
+                    Toast.makeText(getActivity(),"您已经实名认证过了",Toast.LENGTH_SHORT).show();
             }
         });
         linearLayoutforShoucang.setOnClickListener(new View.OnClickListener() {
@@ -233,4 +234,5 @@ public class Fragment_SelfInformationCenter extends Fragment {
             }
         });
     }
+
 }

@@ -35,16 +35,6 @@ public class Util_PictureTool {
     public static File compressImage(Bitmap bitmap, String name) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
-        int options = 100;
-        while (baos.toByteArray().length / 1024 > 300) {  //循环判断如果压缩后图片是否大于500kb,大于继续压缩
-            baos.reset();//重置baos即清空baos
-            options -= 10;//每次都减少10
-            bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中
-            long length = baos.toByteArray().length;
-        }
-
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-
         File file = new File(Environment.getExternalStorageDirectory(), name + ".jpg");
         try {
             FileOutputStream fos = new FileOutputStream(file);

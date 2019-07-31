@@ -2,16 +2,20 @@ package com.example.classchat.Adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.bumptech.glide.Glide;
+import com.example.classchat.Activity.Activity_Market_ShoppingCart;
+import com.example.classchat.Activity.MainActivity;
+import com.example.classchat.Object.Object_Commodity;
 import com.example.classchat.Object.Object_Commodity_Shoppingcart;
 import com.example.classchat.R;
 
@@ -20,6 +24,8 @@ import org.json.JSONObject;
 
 import java.util.Iterator;
 import java.util.List;
+
+import static android.content.Context.MODE_MULTI_PROCESS;
 
 /**
  * 用到了商品数据提供类，这里需要修改
@@ -38,7 +44,7 @@ public class Adapter_ShoppingCart extends RecyclerView.Adapter<RecyclerView.View
     List<JSONObject> list ;
     SharedPreferences.Editor editor ;
 
-    public Adapter_ShoppingCart(Context context, final List<Object_Commodity_Shoppingcart> datas, TextView tvShopcartTotal, CheckBox checkboxAll, CheckBox cb_all) {
+    public Adapter_ShoppingCart(Context context, final List<Object_Commodity_Shoppingcart> datas, TextView tvShopcartTotal,  CheckBox checkboxAll, CheckBox cb_all) {
         //接收
         this.mContext = context;
         this.datas = datas;
@@ -133,34 +139,19 @@ public class Adapter_ShoppingCart extends RecyclerView.Adapter<RecyclerView.View
     //删除选中的data
     public void deleteData() throws JSONException {
         if (datas.size() > 0) {
-            for (Iterator iterator = datas.iterator(); iterator.hasNext(); ) {
 
-                Object_Commodity_Shoppingcart cart = (Object_Commodity_Shoppingcart) iterator.next();
+            for ( int k = datas.size() -1 ; k >= 0 ; k-- ) {
 
+                Object_Commodity_Shoppingcart cart = datas.get(k);
                 if (cart.isChildSelected()) {
-                    int position = datas.indexOf(cart);
-                    //删除本地缓存
-//                    for(int i = 0 ; i < list.size() ; i++){
-////                        if(cart.getItemID().equals(list.get(i).getString("itemId")))
-////                            list.remove(i);
-////                    }
-
-                    if( datas != null ){
-                        for(int i = 0 ; i < datas.size() ; i++){
-                            if(cart.getItemID().equals(datas.get(i).getItemID()))
-                                datas.remove(i);
-                        }
-                        editor.clear().commit();
-                        editor.putString("cart_information", JSON.toJSONString(datas)).commit();
-                    }
-
-                    //删除当前内存
-//                    iterator.remove();
+                    // 如果被选中，就从缓存里移掉
+                    datas.remove(k);
+                    editor.clear().commit();
+                    editor.putString("cart_information", JSON.toJSONString(datas)).commit();
                     //刷新数据
-                    notifyItemRemoved(position);
+                    notifyItemRemoved(k);
                 }
             }
-            editor.putString("cart_information" , JSON.toJSONString(list)).commit();
         }
     }
 

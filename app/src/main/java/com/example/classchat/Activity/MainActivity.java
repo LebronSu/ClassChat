@@ -1,14 +1,19 @@
 package com.example.classchat.Activity;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -49,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
     private String password;
     private String imageUrl;
     private String nickName;
+    private String proUni;
+    private String realName;
 
     private FragmentManager manager = getSupportFragmentManager();
     private long firstTime;// 记录点击返回时第一次的时间毫秒值
@@ -107,7 +114,8 @@ public class MainActivity extends AppCompatActivity {
         nickName = intent.getStringExtra("userName");
         imageUrl = intent.getStringExtra("userImage");
         password = intent.getStringExtra("userPassword");
-
+        proUni = intent.getStringExtra("proUni");
+        realName = intent.getStringExtra("realName");
 
 //        initView();
         initBottomNavigation();
@@ -214,4 +222,11 @@ public class MainActivity extends AppCompatActivity {
     public String getPassword() {
         return password;
     }
+
+    public Boolean getAuthentation() {return isAuthentation;}
+
+    public String getProUni() {return proUni;}
+
+    public String getRealName(){return realName;};
+
 }
