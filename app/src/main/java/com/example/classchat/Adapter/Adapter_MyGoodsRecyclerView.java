@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
+import com.bumptech.glide.Glide;
 import com.example.classchat.Object.Object_Commodity;
 import com.example.classchat.R;
 import com.example.classchat.Util.Util_NetUtil;
@@ -72,6 +73,7 @@ public class Adapter_MyGoodsRecyclerView extends RecyclerView.Adapter<Adapter_My
         final Object_Commodity item = itemList.get(position);
         holder.itemName.setText(item.getItemName());
         holder.itemPrice.setText(Double.toString(item.getPrice()));
+        Glide.with(mContext).load(item.getImageList().get(0)).override(720,480).into(holder.itemPic);
 
         //点击图片取消编辑模式
         holder.itemPic.setOnClickListener(new View.OnClickListener() {
