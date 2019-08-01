@@ -54,4 +54,5 @@ dependencies {
     implementation 'com.sdsmdg.tastytoast:tastytoast:0.1.1'
     implementation 'com.huach:thumbsupview:1.0.0'
     implementation 'com.github.nisrulz:sensey:1.8.0'
+    implementation 'com.github.medyo:android-about-page:1.2' // 关于我们页面的制作
 }

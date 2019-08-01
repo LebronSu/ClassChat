@@ -28,6 +28,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.bumptech.glide.Glide;
 import com.example.classchat.Activity.Activity_AccountInfo;
+import com.example.classchat.Activity.Activity_HelpAndFeedback;
 import com.example.classchat.Activity.Activity_IdAuthentation;
 import com.example.classchat.Activity.Activity_SearchAddCourse;
 import com.example.classchat.Activity.MainActivity;
@@ -142,7 +143,7 @@ public class Fragment_SelfInformationCenter extends Fragment {
         linearLayoutforBangzhu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(),MainActivity.class);
+                Intent intent = new Intent(getActivity(), Activity_HelpAndFeedback.class);
                 startActivity(intent);
             }
         });

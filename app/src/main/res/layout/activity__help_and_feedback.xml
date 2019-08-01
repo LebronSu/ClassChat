@@ -1,9 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F2F2F2"
     tools:context=".Activity.Activity_HelpAndFeedback">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout style="@style/top_nav">
+
+        <ImageView
+            android:id="@+id/iv_HelpandFeedBack_back"
+            android:layout_width="0dp"
+            android:layout_weight="0.15"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:src="@drawable/ico_left_back" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.7"
+            android:gravity="center"
+            android:text="帮助与反馈"
+            android:fontFamily="@font/font"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.15"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="  "
+            android:textColor="#404040"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center"
+        android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:padding="5dp"
+            android:textSize="12sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:text="@string/HelpAndFeedback"/>
+
+        <EditText
+            android:id="@+id/et_help_and_feedback"
+            android:layout_width="match_parent"
+            android:hint="@string/HelpAndFeedbackHint"
+            android:fontFamily="@font/font"
+            android:background="#fff"
+            android:enabled="true"
+            android:gravity="top"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:layout_height="300dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:maxLines="10"
+            android:padding="5dp" />
+        <Button
+            android:layout_marginTop="10dp"
+            android:id="@+id/btn_HelpandFeedBack_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="#07a6e6"
+            android:background="@drawable/bg_radius_register_btn"
+            android:fontFamily="@font/font"
+            android:text="提交"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>

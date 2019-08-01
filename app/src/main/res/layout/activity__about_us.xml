@@ -1,9 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F2F2F2"
     tools:context=".Activity.Activity_AboutUs">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout style="@style/top_nav">
+
+        <ImageView
+            android:id="@+id/about_iv_return"
+            android:layout_width="0dp"
+            android:layout_weight="0.15"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:src="@drawable/ico_left_back" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.7"
+            android:gravity="center"
+            android:text="关于我们"
+            android:fontFamily="@font/font"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_enter"
+            android:layout_width="0dp"
+            android:layout_weight="0.15"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text=""
+            android:textColor="#404040"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/about_relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </RelativeLayout>
+
+</LinearLayout>

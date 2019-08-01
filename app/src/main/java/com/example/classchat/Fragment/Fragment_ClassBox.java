@@ -574,6 +574,9 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     class UpdateStateReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent){
+
+            System.out.println("已收到来自个人认证的广播");
+
             RequestBody requestBody = new FormBody.Builder()
                     .add("userId", userId)
                     .build();

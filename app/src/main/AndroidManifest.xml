@@ -46,6 +46,7 @@
         <activity android:name=".Activity.Activity_ClassGroupChat" />
         <activity android:name=".Activity.Activity_Market_GoodsDetail"/>
         <activity android:name=".Activity.Activity_Market_ShoppingCart"/>
+        <activity android:name=".Activity.Activity_AutoPullCourseFromWeb"/>
         <activity android:name=".Activity.Activity_Market_MyGoods"/>
         <activity
             android:name=".Activity.MainActivity"
