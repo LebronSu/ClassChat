@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private String nickName;
     private String proUni;
     private String realName;
+    private String token;
 
     private FragmentManager manager = getSupportFragmentManager();
     private long firstTime;// 记录点击返回时第一次的时间毫秒值
@@ -116,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
         password = intent.getStringExtra("userPassword");
         proUni = intent.getStringExtra("proUni");
         realName = intent.getStringExtra("realName");
+        token = intent.getStringExtra("token");
 
 //        initView();
         initBottomNavigation();
@@ -227,6 +229,8 @@ public class MainActivity extends AppCompatActivity {
 
     public String getProUni() {return proUni;}
 
-    public String getRealName(){return realName;};
+    public String getRealName(){return realName;}
+
+    public String getToken(){return token;}
 
 }

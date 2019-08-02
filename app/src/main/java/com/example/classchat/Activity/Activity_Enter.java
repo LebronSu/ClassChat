@@ -58,6 +58,7 @@ public class Activity_Enter extends AppCompatActivity implements View.OnClickLis
     private String nickName;
     private String proUni;
     private String realName;
+    private String token;
 
     // 声明一个数组permissions，将需要的权限都放在里面
     String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS};
@@ -94,6 +95,7 @@ public class Activity_Enter extends AppCompatActivity implements View.OnClickLis
                     intent.putExtra("userImage", imageUrl);
                     intent.putExtra("userAuthentationStatus", isAuthentation);
                     intent.putExtra("proUni", proUni);
+                    intent.putExtra("token", token);
                     intent.putExtra("realName", realName);
                     loadingForLogin.dismiss();
                     startActivity(intent);
@@ -243,6 +245,7 @@ public class Activity_Enter extends AppCompatActivity implements View.OnClickLis
                     isAuthentation = Boolean.parseBoolean(jsonObject.getString("authentationstatus"));
                     realName = jsonObject.getString("realname");
                     proUni = jsonObject.getString("university") + "_" + jsonObject.getString("school");
+                    token = jsonObject.getString("token");
                     message.what = LOGIN_SUCCESS;
                     handler.sendMessage(message);
                 }
