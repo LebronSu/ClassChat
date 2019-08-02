@@ -53,11 +53,10 @@ public class Adapter_SearchCourseListView extends BaseAdapter {
         View v=inflater.inflate(R.layout.add_search_item,null);
         TextView courseName= (TextView) v.findViewById(R.id.searchCourseName);
         TextView teacher= (TextView) v.findViewById(R.id.searchTeacher);
-        TextView major= (TextView) v.findViewById(R.id.searchMajor);
         Button choose=(Button)v.findViewById(R.id.searchChoose);
         courseName.setText(item.getCourseName());
         teacher.setText(item.getTeacher());
-        major.setText(item.getMajor());
+
         choose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

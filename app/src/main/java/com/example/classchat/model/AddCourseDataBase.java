@@ -6,13 +6,13 @@ public class AddCourseDataBase {
     private String id;
     private String courseName;
     private  String teacher;
-    private  String major;
 
-    public AddCourseDataBase(String id,String courseName,String teacher,String major){
+
+    public AddCourseDataBase(String id,String courseName,String teacher){
         this.id=id;
         this.courseName=courseName;
         this.teacher=teacher;
-        this.major=major;
+
     }
 
 
@@ -40,13 +40,7 @@ public class AddCourseDataBase {
         this.teacher = teacher;
     }
 
-    public String getMajor() {
-        return major;
-    }
 
-    public void setMajor(String major) {
-        this.major = major;
-    }
 
 
 }

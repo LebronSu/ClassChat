@@ -141,7 +141,7 @@ public class Activity_AddSearchCourse extends AppCompatActivity {
                             items.clear();
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                AddCourseDataBase item=new AddCourseDataBase(jsonObject.getString("groupChatId"), jsonObject.getString("courseName"), jsonObject.getString("teacher"), jsonObject.getString("students"));
+                                AddCourseDataBase item=new AddCourseDataBase(jsonObject.getString("groupChatId"), jsonObject.getString("courseName"), jsonObject.getString("teacher"));
                                 items.add(item);
                             }
                             Message message = new Message();
