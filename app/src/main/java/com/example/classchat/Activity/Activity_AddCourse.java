@@ -243,7 +243,7 @@ public class Activity_AddCourse extends AppCompatActivity {
                                 .path(getCacheDir(v.getContext()))
                                 .saveCache("classBox", mClassBoxData);
 
-                        Intent intent1 = new Intent("com.example.broadcasttest.LOCAL_BROADCAST");
+                        Intent intent1 = new Intent("com.example.broadcasttest.LOCAL_BROADCAST1");
                         localBroadcastManager.sendBroadcast(intent1);
 
                         Intent intent2 = new Intent();

@@ -166,10 +166,10 @@ public class Fragment_SelfInformationCenter extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), Activity_IdAuthentation.class);
                 intent.putExtra("userId",correctId);
-                if(!isAuthentation)
+//                if(!isAuthentation)
                     startActivity(intent);
-                else
-                    Toast.makeText(getActivity(),"您已经实名认证过了",Toast.LENGTH_SHORT).show();
+//                else
+//                    Toast.makeText(getActivity(),"您已经实名认证过了",Toast.LENGTH_SHORT).show();
             }
         });
         linearLayoutforShoucang.setOnClickListener(new View.OnClickListener() {

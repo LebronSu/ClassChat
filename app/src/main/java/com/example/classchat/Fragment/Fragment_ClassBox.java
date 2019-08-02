@@ -2,6 +2,7 @@ package com.example.classchat.Fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -31,6 +33,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSONObject;
 import com.example.classchat.Activity.Activity_AddSearchCourse;
 import com.example.classchat.Activity.Activity_AutoPullCourseFromWeb;
+import com.example.classchat.Activity.Activity_Enter;
 import com.example.classchat.Activity.MainActivity;
 import com.example.classchat.Object.MySubject;
 import com.example.classchat.R;
@@ -81,16 +84,16 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     //学生ID
     private String userId;
 
-    //学生专业
+    // 学生专业
     private String proUni;
 
-    //学生真实姓名
+    // 学生真实姓名
     private String realName;
 
-    //学生是否实名认证
+    // 学生是否实名认证
     private Boolean isAuthentation;
 
-    //对话框
+    // 对话框
     Dialog coursedetail_dialog;
 
     //记录切换的周次，不一定是当前周
@@ -99,8 +102,10 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     // 搞一个自己的变量
     Fragment_ClassBox myContext = this;
 
-    //缓存
+    // 缓存
     private String mClassBoxData = "";
+
+    private Boolean diegod = true;
 
     private UPDATEcastReceiver updatereceiver;
     private UpdateStateReceiver updateStateReceiver;
@@ -112,6 +117,7 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         return  inflater.inflate(R.layout.activity__main__timetable, container, false);
 
     }
+
 
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -137,13 +143,17 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         localBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
         //广播接收
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("com.example.broadcasttest.LOCAL_BROADCAST");
+        intentFilter.addAction("com.example.broadcasttest.LOCAL_BROADCAST1");
         updatereceiver = new UPDATEcastReceiver();
         localBroadcastManager.registerReceiver(updatereceiver, intentFilter);
+
+
         IntentFilter intentFilter1 = new IntentFilter();
         intentFilter1.addAction("com.example.broadcasttest.UPDATE_STATE");
         updateStateReceiver = new UpdateStateReceiver();
         localBroadcastManager.registerReceiver(updateStateReceiver, intentFilter1);
+
+
         initClassBoxData();
 
         initTimetableView();
@@ -167,7 +177,6 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                 .getCache("classBox", String.class);
 
 //        Log.v("mySubjects1",mClassBoxData);
-
 //        Cache.with(myContext.getActivity())
 //                .path(getCacheDir(myContext.getActivity()))
 //                .saveCache("classBox", mClassBoxData);
@@ -399,8 +408,14 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                             Toast.makeText(getContext(), "请先实名认证",Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.menu_import_classes:
-                        if (isAuthentation)
-                            importClass();
+                        if (isAuthentation){
+                            if (diegod) {
+                                importClass();
+                            }
+                            else {
+                                Toast.makeText(getContext(), "实名认证状态还未更新，请稍等片刻再点击", Toast.LENGTH_SHORT).show();
+                            }
+                        }
                         else
                             Toast.makeText(getContext(), "请先实名认证", Toast.LENGTH_SHORT).show();
                         break;
@@ -575,7 +590,7 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         @Override
         public void onReceive(Context context, Intent intent){
 
-            System.out.println("已收到来自个人认证的广播");
+            diegod = false;
 
             RequestBody requestBody = new FormBody.Builder()
                     .add("userId", userId)
@@ -590,8 +605,9 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                     JSONObject jsonObject = JSON.parseObject(response.body().string());
                     realName = jsonObject.getString("realname");
-                    proUni = jsonObject.getString("tablename");
+                    proUni = jsonObject.getString("university") + "_" + jsonObject.getString("school");
                     isAuthentation = Boolean.parseBoolean(jsonObject.getString("authentationstatus"));
+                    diegod = true;
                 }
             });
         }

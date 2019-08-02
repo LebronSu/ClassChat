@@ -78,7 +78,7 @@ public class Activity_SearchAddCourse extends AppCompatActivity {
         public void handleMessage(Message msg){
             switch (msg.what){
                 case CHANGE_VIEW:
-                    Intent intent1 = new Intent("com.example.broadcasttest.LOCAL_BROADCAST");
+                    Intent intent1 = new Intent("com.example.broadcasttest.LOCAL_BROADCAST1");
                     localBroadcastManager.sendBroadcast(intent1);
                     Intent intent2 = new Intent(Activity_SearchAddCourse.this, MainActivity.class);
                     startActivity(intent2);

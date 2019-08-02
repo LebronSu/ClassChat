@@ -24,7 +24,6 @@
             android:layout_weight="0.7"
             android:gravity="center"
             android:text="帮助与反馈"
-            android:fontFamily="@font/font"
             android:textSize="16sp" />
 
         <TextView
@@ -57,7 +56,6 @@
             android:id="@+id/et_help_and_feedback"
             android:layout_width="match_parent"
             android:hint="@string/HelpAndFeedbackHint"
-            android:fontFamily="@font/font"
             android:background="#fff"
             android:enabled="true"
             android:gravity="top"
@@ -76,7 +74,6 @@
             android:layout_gravity="center"
             android:textColor="#07a6e6"
             android:background="@drawable/bg_radius_register_btn"
-            android:fontFamily="@font/font"
             android:text="提交"/>
 
     </LinearLayout>

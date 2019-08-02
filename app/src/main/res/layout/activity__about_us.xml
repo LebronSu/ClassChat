@@ -24,7 +24,6 @@
             android:layout_weight="0.7"
             android:gravity="center"
             android:text="关于我们"
-            android:fontFamily="@font/font"
             android:textSize="16sp" />
 
         <TextView

@@ -3,9 +3,11 @@ package com.example.classchat.Activity;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
@@ -22,6 +24,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.classchat.Object.MySubject;
 import com.example.classchat.R;
 import com.example.classchat.Util.Util_NetUtil;
+import com.example.library_cache.Cache;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -106,9 +109,7 @@ public class Activity_AutoPullCourseFromWeb extends AppCompatActivity {
                                 mysubjects.add(subject);
 
                             }
-                            //TODO  这里把上面的 mysubjects 列表存进缓存就可以了
-
-                            //TODO  这里发送信息给 handler
+                            // 向数据库发送待调整的mysubjects
                             Message message = new Message();
                             message.what = 2;
                             handler.sendMessage(message);
@@ -118,7 +119,7 @@ public class Activity_AutoPullCourseFromWeb extends AppCompatActivity {
                     break;
 
                 case 2:
-                    //TODO  这里需要向服务器发出这些课程 由服务器去更新
+                    //这里需要向服务器发出这些课程，服务器再返回合格的mysubjects
                     RequestBody requestBody = new FormBody.Builder()
                             .add("userId", userId)
                             .add("subjects", JSON.toJSONString(mysubjects))
@@ -132,19 +133,31 @@ public class Activity_AutoPullCourseFromWeb extends AppCompatActivity {
 
                         @Override
                         public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                            Boolean responseData = Boolean.valueOf(response.body().string());
-                            if (responseData) {
-                                // 发送信息给 handler
-                                Message message = new Message();
-                                message.what = 3;
-                                handler.sendMessage(message);
+                            String responseData = response.body().string();
+                            List<String> jsonlist = JSON.parseArray(responseData, String.class);
+                            mysubjects.clear();
+                            for(String s : jsonlist) {
+                                MySubject mySubject = JSON.parseObject(s, MySubject.class);
+                                mysubjects.add(mySubject);
                             }
+                            //获得数据后存入缓存
+                            Cache.with(Activity_AutoPullCourseFromWeb.this)
+                                    .path(getCacheDir(Activity_AutoPullCourseFromWeb.this))
+                                    .remove("classBox");
+
+                            Cache.with(Activity_AutoPullCourseFromWeb.this)
+                                    .path(getCacheDir(Activity_AutoPullCourseFromWeb.this))
+                                    .saveCache("classBox", responseData);
+                            // 发送信息给 handler
+                            Message message = new Message();
+                            message.what = 3;
+                            handler.sendMessage(message);
                         }
                     });
                     break;
                 case 3:
                     // 结束等待转圈画面 跳转回课程表fragment 刷新其页面（广播）
-                    Intent intent1 = new Intent("com.example.broadcasttest.LOCAL_BROADCAST");
+                    Intent intent1 = new Intent("com.example.broadcasttest.LOCAL_BROADCAST1");
                     localBroadcastManager.sendBroadcast(intent1);
                     loadingForAddCommodity.dismiss();
                     finish();
@@ -160,6 +173,7 @@ public class Activity_AutoPullCourseFromWeb extends AppCompatActivity {
         Intent intent = getIntent();
         userId = intent.getStringExtra("userId");
         proUni = intent.getStringExtra("proUni");
+        System.out.println(userId);
         System.out.println(proUni);
         //广播
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
@@ -227,5 +241,19 @@ public class Activity_AutoPullCourseFromWeb extends AppCompatActivity {
             }
         }
         return weekList;
+    }
+
+    /*
+     * 获得缓存地址
+     * */
+    public String getCacheDir(Context context) {
+        String cachePath;
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+                || !Environment.isExternalStorageRemovable()) {
+            cachePath = context.getExternalCacheDir().getPath();
+        } else {
+            cachePath = context.getCacheDir().getPath();
+        }
+        return cachePath;
     }
 }
