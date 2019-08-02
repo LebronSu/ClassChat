@@ -402,7 +402,7 @@ public class Activity_IdAuthentation extends AppCompatActivity {
         }
         if (Build.VERSION.SDK_INT >= 24){
             imageUri = FileProvider.getUriForFile(Activity_IdAuthentation.this,
-                    "com.example.theclasschat.camera.fileprovider",outputImage);
+                    "com.example.classchat.FileProvider",outputImage);
         } else {
             imageUri = Uri.fromFile(outputImage);
         }

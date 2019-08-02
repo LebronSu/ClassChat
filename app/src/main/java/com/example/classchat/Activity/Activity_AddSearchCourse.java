@@ -125,7 +125,7 @@ public class Activity_AddSearchCourse extends AppCompatActivity {
                         .add("condition", s.toString())
                         .build();
 
-                Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8082/searchcourse", requestBody, new Callback() {
+                Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8081/searchcourse", requestBody, new Callback() {
                     @Override
                     public void onFailure(@NotNull Call call, @NotNull IOException e) {
 

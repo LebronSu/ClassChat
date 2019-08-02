@@ -1,1 +1,1 @@
-include ':app', ':library_activity_timetable', ':library_cache', ':library'
+include ':app', ':library_activity_timetable', ':library_cache', ':library', ':IMLib', ':IMKit'

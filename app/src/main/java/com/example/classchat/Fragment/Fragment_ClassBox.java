@@ -11,7 +11,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -61,12 +60,18 @@ import com.alibaba.fastjson.JSON;
 
 import org.jetbrains.annotations.NotNull;
 
+import io.rong.imkit.RongIM;
+import io.rong.imlib.RongIMClient;
+import io.rong.imlib.model.Conversation;
+import io.rong.imlib.model.Message;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import static io.rong.imkit.RongIM.connect;
 
 
 public class Fragment_ClassBox extends Fragment implements OnClickListener {
@@ -80,6 +85,9 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     LinearLayout layout;
     TextView titleTextView;
     List<MySubject> mySubjects = new ArrayList<MySubject>();
+
+    //学生聊天时所需的token
+    String token = "";
 
     //学生ID
     private String userId;
@@ -153,10 +161,57 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         updateStateReceiver = new UpdateStateReceiver();
         localBroadcastManager.registerReceiver(updateStateReceiver, intentFilter1);
 
+        RongIM.init(getActivity());
 
         initClassBoxData();
 
         initTimetableView();
+
+        //聊天登录函数
+        if (isAuthentation)
+            connect(token, new RongIMClient.ConnectCallback() {
+            @Override
+            public void onTokenIncorrect() {
+
+            }
+
+            @Override
+            public void onSuccess(String s) {
+                // 去执行下面的函数\
+                Log.d("LoginActivity", "--onSuccess");
+
+                // 登陆成功
+                Toast.makeText(getActivity(), "可以使用聊天", Toast.LENGTH_SHORT).show();
+
+                RongIM.getInstance().getUnreadCount(Conversation.ConversationType.GROUP, "0001", new RongIMClient.ResultCallback<Integer>() {
+                    @Override
+                    public void onSuccess(Integer integer) {
+//                        got.setText(integer);
+                        Log.d(TAG, String.valueOf(integer));
+                    }
+
+                    @Override
+                    public void onError(RongIMClient.ErrorCode errorCode) {
+                        Log.d(TAG, String.valueOf(errorCode.getValue()));
+                    }
+                });
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+
+            }
+        });
+
+        //聊天信息的监听器(登录之后时时刻刻收到的信息)
+        RongIM.setOnReceiveMessageListener(new RongIMClient.OnReceiveMessageListener() {
+            @Override
+            public boolean onReceived(Message message, int i) {
+                Log.d(TAG, "onReceived: " + message.getTargetId());
+                return false;
+            }
+        });
+
     }
 
     /**
@@ -191,7 +246,6 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
             Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8081/getallcourse", requestBody,new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    //TODO  mClassBoxData=接收的json字符串
 
                 }
 
@@ -391,7 +445,7 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
 
     }
 
-    /**
+     /**
      * 显示弹出菜单
      */
     @SuppressLint("RestrictedApi")
@@ -607,7 +661,41 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                     realName = jsonObject.getString("realname");
                     proUni = jsonObject.getString("university") + "_" + jsonObject.getString("school");
                     isAuthentation = Boolean.parseBoolean(jsonObject.getString("authentationstatus"));
+                    token = jsonObject.getString("token");
                     diegod = true;
+                    connect(token, new RongIMClient.ConnectCallback() {
+                        @Override
+                        public void onTokenIncorrect() {
+
+                        }
+
+                        @Override
+                        public void onSuccess(String s) {
+                            // 去执行下面的函数\
+                            Log.d("LoginActivity", "--onSuccess");
+
+                            // 登陆成功
+                            Toast.makeText(getActivity(), "可以使用聊天", Toast.LENGTH_SHORT).show();
+
+                            RongIM.getInstance().getUnreadCount(Conversation.ConversationType.GROUP, "0001", new RongIMClient.ResultCallback<Integer>() {
+                                @Override
+                                public void onSuccess(Integer integer) {
+//                        got.setText(integer);
+                                    Log.d(TAG, String.valueOf(integer));
+                                }
+
+                                @Override
+                                public void onError(RongIMClient.ErrorCode errorCode) {
+                                    Log.d(TAG, String.valueOf(errorCode.getValue()));
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+
+                        }
+                    });
                 }
             });
         }
@@ -618,5 +706,7 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         super.onDestroy();
         localBroadcastManager.unregisterReceiver(updatereceiver);
     }
+
+
 
 }

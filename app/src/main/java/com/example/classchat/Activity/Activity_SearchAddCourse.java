@@ -60,6 +60,7 @@ public class Activity_SearchAddCourse extends AppCompatActivity {
     private AlertDialog.Builder builder1;
     private AlertDialog.Builder builder2;
     private AlertDialog.Builder builder3;
+    private AlertDialog.Builder builder4;
     //周数数组
     List<Integer> weeksnum=new ArrayList<>();
 
@@ -217,6 +218,16 @@ public class Activity_SearchAddCourse extends AppCompatActivity {
             }
         });
 
+        //信息补全提示框4
+        builder4 = new AlertDialog.Builder(this);
+        builder4.setTitle("提示");
+        builder4.setMessage("您当前添加的课程与现有课程表存在冲突(这个时间段已经有此课程了)， 请修改新添加的课程信息（我们将覆盖原有课程表）");
+        builder4.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+
 
         //点击返回
         back.setOnClickListener(new View.OnClickListener() {
@@ -245,8 +256,6 @@ public class Activity_SearchAddCourse extends AppCompatActivity {
                     else if(dayOfWeek_<1||dayOfWeek_>7){builder3.show();}
                     else {
                         final MySubject item = new MySubject( course_name, room_, teacher_name, weeksnum, start_, step, dayOfWeek_,id,0);
-
-                        System.out.println(userId);
                         RequestBody requestBody = new FormBody.Builder()
                                 .add("userId",userId)
                                 .add("subject", JSON.toJSONString(item))
@@ -283,7 +292,6 @@ public class Activity_SearchAddCourse extends AppCompatActivity {
                                 }
                             }
                         });
-
                     }
                 }
             }
@@ -302,4 +310,35 @@ public class Activity_SearchAddCourse extends AppCompatActivity {
         }
         return cachePath;
     }
+
+    /*
+    判断这节课是否已经被添加到课程中
+     */
+//    private String isInMysubjects(MySubject subject) {
+//
+//        String value = "TOBEDETERMINED";
+//
+//        mClassBoxData = Cache.with(Activity_SearchAddCourse.this)
+//                .path(getCacheDir(Activity_SearchAddCourse.this))
+//                .getCache("classBox", String.class);
+//
+//        List<MySubject> mySubjects = JSON.parseArray(mClassBoxData, MySubject.class);
+//
+//        for (MySubject item : mySubjects) {
+//            if ((item.getDay() == subject.getDay()) && ((subject.getStart() >= item.getStart() && (subject.getStart() <= (item.getStart() + item.getStep()))))) {
+//                if (/*周数是错开的*/)
+//                // 处于此条件下的subject, 跟这个item不在一个频道，暂定是完美状态
+//                    value = "ADD";
+//                else
+//                    // 周数有重叠的部分
+//                    if (/*名字是一样的*/)
+//                        value = "NAME_SAME"; // TODO 然后可以直接终止循环了
+//                    else
+//                        value = "NAME_DIFFERENT"; // TODO 然后也可以终止循环了
+//            }else {
+//                // 处于此条件下的subject, 跟这个item完全不在一个频道，暂定是完美状态
+//                value = "ADD";
+//            }
+//        }
+//    }
 }
