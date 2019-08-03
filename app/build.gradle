@@ -6,7 +6,9 @@ MobSDK {
     appKey "2ad89c86f3b62"
     appSecret "eaa05d319e5b21b3b3b5b923efc2c8d4"
 
-    SMSSDK {}
+    SMSSDK {
+        gui false
+    }
 }
 
 android {

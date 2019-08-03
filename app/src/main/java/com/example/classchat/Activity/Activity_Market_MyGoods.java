@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.example.classchat.Adapter.Adapter_MyGoodsRecyclerView;
 import com.example.classchat.Object.Object_Commodity;
 import com.example.classchat.R;
@@ -154,12 +155,11 @@ public class Activity_Market_MyGoods extends AppCompatActivity {
                 // 得到服务器返回的具体内容
                 String responseData = response.body().string();
                 // 转化为具体的对象列表
-                List<String> jsonlist = JSON.parseArray(responseData, String.class);
+                List<Object_Commodity> jsonlist = JSON.parseObject(responseData, new TypeReference<List<Object_Commodity>>(){});
 
                 if(jsonlist.size() > 0){
-                    for(int i = 0; i < jsonlist.size(); i++) {
-                        Object_Commodity object_commodity = JSON.parseObject(jsonlist.get(i), Object_Commodity.class);
-                        list.add(object_commodity);
+                    for(Object_Commodity obj : jsonlist) {
+                        list.add(obj);
                     }
                     Message message = new Message();
                     message.what = RECEIVE_SUCCESS;
