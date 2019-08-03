@@ -282,7 +282,7 @@ public class Activity_SearchAddCourse extends AppCompatActivity {
 
                                         mySubjects.add(item);
 
-                                        mClassBoxData=mySubjects.toString();
+                                        mClassBoxData=JSON.toJSONString(mySubjects);
 
                                         Cache.with(v.getContext())
                                                 .path(getCacheDir(v.getContext()))
