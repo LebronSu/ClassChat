@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.classchat.R;
 
@@ -32,6 +33,10 @@ public class Activity_Conversation extends FragmentActivity {
         }
 
         ImageView imageView = findViewById(R.id.iv_return);
+
+        TextView textView = findViewById(R.id.course_chat_title);
+
+        textView.setText(getIntent().getData().getQueryParameter("title"));
 
         FragmentManager fragmentManage = getSupportFragmentManager();
         ConversationFragment fragement = (ConversationFragment) fragmentManage.findFragmentById(R.id.conversation);
