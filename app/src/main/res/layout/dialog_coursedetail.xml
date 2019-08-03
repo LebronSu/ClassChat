@@ -18,18 +18,25 @@
             android:gravity="center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="课程名"
+            android:text=""
             android:textSize="15sp"
             android:textStyle="bold"
             android:textColor="#BB000000"
             android:layout_weight="1" />
 
         <ImageView
-            android:id="@+id/close_dialog"
+            android:id="@+id/delete_class"
             android:layout_margin="10dp"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:background="@drawable/close_circle"/>
+            android:src="@drawable/trash_can"/>
+
+        <ImageView
+            android:id="@+id/close_dialog"
+            android:layout_margin="5dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/close"/>
 
     </LinearLayout>
 
@@ -52,7 +59,7 @@
             android:gravity="center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="第1-18周"
+            android:text=""
             android:textSize="15sp"
             android:textColor="#BB000000"
             android:layout_weight="1" />
@@ -79,7 +86,7 @@
             android:gravity="center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="周二    第5-6节"
+            android:text=""
             android:textSize="15sp"
             android:textColor="#BB000000"
             android:layout_weight="1" />
@@ -106,7 +113,7 @@
             android:gravity="center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="小马哥"
+            android:text=""
             android:textSize="15sp"
             android:textColor="#BB000000"
             android:layout_weight="1" />
@@ -133,7 +140,7 @@
             android:gravity="center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="A1-101"
+            android:text=""
             android:textSize="15sp"
             android:textColor="#BB000000"
             android:layout_weight="1" />
@@ -169,7 +176,7 @@
                 android:gravity="center_horizontal"
                 android:textSize="12sp"
                 android:textColor="#BB000000"
-                android:text="讨论交流"/>
+                android:text="马上聊"/>
 
         </LinearLayout>
 
@@ -181,24 +188,24 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_margin="10dp"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_gravity="center"
-                android:background="@drawable/yuedu"/>
+                android:layout_margin="10dp"
+                android:background="@drawable/yuedu" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textSize="12sp"
+                android:text="藏经阁"
                 android:textColor="#BB000000"
-                android:text="学习资料"/>
+                android:textSize="12sp" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/course_note"
+            android:id="@+id/course_sign"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -217,12 +224,12 @@
                 android:gravity="center"
                 android:textSize="12sp"
                 android:textColor="#BB000000"
-                android:text="课堂记录"/>
+                android:text="上上签"/>
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/course_sign"
+            android:id="@+id/course_note"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -241,7 +248,7 @@
                 android:gravity="center"
                 android:textSize="12sp"
                 android:textColor="#BB000000"
-                android:text="上课签到"/>
+                android:text="随心记"/>
 
         </LinearLayout>
 

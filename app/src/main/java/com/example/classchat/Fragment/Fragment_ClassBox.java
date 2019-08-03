@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -25,6 +26,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +35,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.classchat.Activity.Activity_AddSearchCourse;
 import com.example.classchat.Activity.Activity_AutoPullCourseFromWeb;
 import com.example.classchat.Activity.Activity_Enter;
+import com.example.classchat.Activity.Activity_SearchAddCourse;
 import com.example.classchat.Activity.MainActivity;
 import com.example.classchat.Object.MySubject;
 import com.example.classchat.R;
@@ -64,6 +67,7 @@ import io.rong.imkit.RongIM;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
+import io.rong.imlib.model.UserInfo;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -75,6 +79,8 @@ import static io.rong.imkit.RongIM.connect;
 
 
 public class Fragment_ClassBox extends Fragment implements OnClickListener {
+
+    private AlertDialog.Builder alertBuilder;
 
     private static final String TAG = "Activity_Main_Timetable";
 
@@ -94,6 +100,9 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
 
     // 学生专业
     private String proUni;
+
+    // 头像Url
+    private String imageUrl;
 
     // 学生真实姓名
     private String realName;
@@ -135,6 +144,8 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         isAuthentation = mainActivity.getAuthentation();
         realName = mainActivity.getRealName();
         proUni = mainActivity.getProUni();
+        token = mainActivity.getToken();
+        imageUrl = mainActivity.getImageUrl();
         moreButton =(ImageButton)getActivity().findViewById(R.id.id_more);
         moreButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -183,18 +194,21 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                 // 登陆成功
                 Toast.makeText(getActivity(), "可以使用聊天", Toast.LENGTH_SHORT).show();
 
-                RongIM.getInstance().getUnreadCount(Conversation.ConversationType.GROUP, "0001", new RongIMClient.ResultCallback<Integer>() {
-                    @Override
-                    public void onSuccess(Integer integer) {
-//                        got.setText(integer);
-                        Log.d(TAG, String.valueOf(integer));
-                    }
+                RongIM.getInstance().setCurrentUserInfo(new UserInfo(userId, realName, Uri.parse(imageUrl)));
+                RongIM.getInstance().setMessageAttachedUserInfo(true);
 
-                    @Override
-                    public void onError(RongIMClient.ErrorCode errorCode) {
-                        Log.d(TAG, String.valueOf(errorCode.getValue()));
-                    }
-                });
+//                RongIM.getInstance().getUnreadCount(Conversation.ConversationType.GROUP, "0001", new RongIMClient.ResultCallback<Integer>() {
+//                    @Override
+//                    public void onSuccess(Integer integer) {
+////                        got.setText(integer);
+//                        Log.d(TAG, String.valueOf(integer));
+//                    }
+//
+//                    @Override
+//                    public void onError(RongIMClient.ErrorCode errorCode) {
+//                        Log.d(TAG, String.valueOf(errorCode.getValue()));
+//                    }
+//                });
             }
 
             @Override
@@ -270,6 +284,9 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                     Cache.with(myContext.getActivity())
                             .path(getCacheDir(myContext.getActivity()))
                             .saveCache("classBox", mClassBoxData);
+
+                    Intent intent1 = new Intent("com.example.broadcasttest.LOCAL_BROADCAST1");
+                    localBroadcastManager.sendBroadcast(intent1);
                 }
             });
         } else {
@@ -421,27 +438,72 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     private TextView textViewforcoursetime;
     private TextView textViewforcourseteacher;
     private TextView textViewforcourseroom;
+    private ImageView imageViewRemoveClass;
+    private ImageView imageViewCloseDialog;
+    private LinearLayout linearLayoutChat;
 
-    protected void showDialog(Schedule bean){
+    protected void showDialog(final Schedule bean){
         LayoutInflater inflater=LayoutInflater.from(this.getActivity());
         View myview=inflater.inflate(R.layout.dialog_coursedetail,null);
-        AlertDialog.Builder builder=new AlertDialog.Builder(this.getActivity());
+        final AlertDialog.Builder builder=new AlertDialog.Builder(this.getActivity());
 
         textViewforcoursename=myview.findViewById(R.id.coursedetail_name);
         textViewforncoursezhou=myview.findViewById(R.id.coursedetail_zhoutime);
         textViewforcoursetime=myview.findViewById(R.id.coursedetail_daytime);
         textViewforcourseteacher=myview.findViewById(R.id.coursedetail_teacher);
         textViewforcourseroom=myview.findViewById(R.id.coursedetail_room);
+        imageViewRemoveClass=myview.findViewById(R.id.delete_class);
+        imageViewCloseDialog=myview.findViewById(R.id.close_dialog);
+        linearLayoutChat = myview.findViewById(R.id.course_chat);
+
+
 
         textViewforcoursename.setText(bean.getName());
-        textViewforncoursezhou.setText("第"+bean.getWeekList()+"周");
-        textViewforcoursetime.setText("周"+bean.getDay()+"   "+"第"+bean.getStart()+"-"+(bean.getStart()+bean.getStep())+"节");
+        textViewforncoursezhou.setText("第"+bean.getWeekList().get(0) + " ~ "+bean.getWeekList().get(bean.getWeekList().size() - 1) +"周");
+        textViewforcoursetime.setText("周"+bean.getDay()+"   "+"第"+bean.getStart()+"-"+(bean.getStart()+bean.getStep() -1 )+"节");
         textViewforcourseroom.setText(bean.getRoom());
         textViewforcourseteacher.setText(bean.getTeacher());
 
         builder.setView(myview);
         coursedetail_dialog=builder.create();
         coursedetail_dialog.show();
+
+        imageViewCloseDialog.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                coursedetail_dialog.dismiss();
+            }
+        });
+
+        imageViewRemoveClass.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertBuilder = new AlertDialog.Builder(getContext());
+                alertBuilder.setTitle("提示");
+                alertBuilder.setMessage("确认删除？");
+                alertBuilder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        removeSubject(new MySubject(bean.getName(), bean.getRoom(), bean.getTeacher(), bean.getWeekList(), bean.getStart(), bean.getStep(), bean.getDay(), bean.getId(), bean.getMessagecount()));
+                        coursedetail_dialog.dismiss();
+                    }
+                });
+                alertBuilder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+                alertBuilder.show();
+            }
+        });
+
+        linearLayoutChat.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RongIM.getInstance().startGroupChat(getContext(), bean.getId(), bean.getName());
+            }
+        });
 
     }
 
@@ -677,18 +739,20 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                             // 登陆成功
                             Toast.makeText(getActivity(), "可以使用聊天", Toast.LENGTH_SHORT).show();
 
-                            RongIM.getInstance().getUnreadCount(Conversation.ConversationType.GROUP, "0001", new RongIMClient.ResultCallback<Integer>() {
-                                @Override
-                                public void onSuccess(Integer integer) {
-//                        got.setText(integer);
-                                    Log.d(TAG, String.valueOf(integer));
-                                }
 
-                                @Override
-                                public void onError(RongIMClient.ErrorCode errorCode) {
-                                    Log.d(TAG, String.valueOf(errorCode.getValue()));
-                                }
-                            });
+                            //TODO 以下就是获取未读消息数
+//                            RongIM.getInstance().getUnreadCount(Conversation.ConversationType.GROUP, "0001", new RongIMClient.ResultCallback<Integer>() {
+//                                @Override
+//                                public void onSuccess(Integer integer) {
+////                        got.setText(integer);
+//                                    Log.d(TAG, String.valueOf(integer));
+//                                }
+//
+//                                @Override
+//                                public void onError(RongIMClient.ErrorCode errorCode) {
+//                                    Log.d(TAG, String.valueOf(errorCode.getValue()));
+//                                }
+//                            });
                         }
 
                         @Override
@@ -705,6 +769,61 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     public void onDestroy(){
         super.onDestroy();
         localBroadcastManager.unregisterReceiver(updatereceiver);
+    }
+
+    public void removeSubject (MySubject subject) {
+        mClassBoxData = Cache.with(myContext.getActivity())
+                .path(getCacheDir(myContext.getActivity()))
+                .getCache("classBox", String.class);
+
+        List<MySubject> mySubjects = JSON.parseArray(mClassBoxData, MySubject.class);
+
+        int count = 0;
+
+        for (MySubject item : mySubjects) {
+            if (item.getId().equals(subject.getId())) {
+                count++;
+            }
+        }
+
+        if (count == 1) {
+
+            //调用服务器
+            RequestBody requestBody = new FormBody.Builder()
+                    .add("userId", userId)
+                    .add("coursename", subject.getName())
+                    .build();
+
+            Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8081/removecourse", requestBody, new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+
+                }
+            });
+        }
+
+        for (int i = 0 ; i < mySubjects.size() ; i++) {
+            if ((mySubjects.get(i).getId().equals(subject.getId())) && (mySubjects.get(i).getStart() == subject.getStart()) && (mySubjects.get(i).getDay() == subject.getDay()) ) {
+                mySubjects.remove(i);
+            }
+        }
+
+        //获得数据后存入缓存
+        Cache.with(myContext.getActivity())
+                .path(getCacheDir(myContext.getActivity()))
+                .remove("classBox");
+
+        Cache.with(myContext.getActivity())
+                .path(getCacheDir(myContext.getActivity()))
+                .saveCache("classBox", JSON.toJSONString(mySubjects));
+
+        Intent intent1 = new Intent("com.example.broadcasttest.LOCAL_BROADCAST1");
+        localBroadcastManager.sendBroadcast(intent1);
     }
 
 

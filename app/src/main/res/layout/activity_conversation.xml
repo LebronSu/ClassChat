@@ -11,23 +11,25 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.15"
+            android:src="@drawable/ico_left_back"
             android:padding="8dp" />
 
         <TextView
+            android:id="@+id/course_chat_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.7"
             android:gravity="center"
-            android:text="登录"
+            android:text="待定"
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/tv_register"
+            android:id="@+id/tv_reminder"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.15"
             android:padding="8dp"
-            android:text="注册"
+            android:text=""
             android:gravity="center"
             android:textColor="#404040"
             android:textSize="14sp" />

@@ -115,6 +115,10 @@ public class Activity_IdAuthentation extends AppCompatActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
+                    adapter1 = new ArrayAdapter(mContext, R.layout.item_auth,uni.toJavaList(String.class));
+                    university.setAdapter(adapter1);
+                    adapter2 = new ArrayAdapter(mContext, R.layout.item_auth,col.toJavaList(String.class));
+                    college.setAdapter(adapter2);
                     loadingForAddCommodity.dismiss();
                     break;
                 case 2:
@@ -125,6 +129,8 @@ public class Activity_IdAuthentation extends AppCompatActivity {
                     loadingForAddCommodity.dismiss();
                     Toast.makeText(Activity_IdAuthentation.this,"认证成功", Toast.LENGTH_SHORT).show();
                     finish();
+                case 3:
+
                 default:
                     break;
             }
@@ -173,10 +179,6 @@ public class Activity_IdAuthentation extends AppCompatActivity {
                 JSONObject jsonObject = JSON.parseObject(responsedata);
                 uni = jsonObject.getJSONArray("school");
                 col = jsonObject.getJSONArray("university");
-                adapter1 = new ArrayAdapter(mContext, R.layout.item_auth,uni.toJavaList(String.class));
-                university.setAdapter(adapter1);
-                adapter2 = new ArrayAdapter(mContext, R.layout.item_auth,col.toJavaList(String.class));
-                college.setAdapter(adapter2);
                 Message message = new Message();
                 message.what = 1;
                 handler.sendMessage(message);
