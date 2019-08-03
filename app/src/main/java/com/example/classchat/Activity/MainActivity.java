@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -15,6 +14,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -27,6 +27,7 @@ import com.example.classchat.Fragment.Fragment_Forum;
 import com.example.classchat.Fragment.Fragment_SelfInformationCenter;
 import com.example.classchat.Fragment.Fragment_Market;
 import com.example.classchat.R;
+import com.example.classchat.Util.MyConversationClickListener;
 import com.example.classchat.Util.Util_NetUtil;
 import com.github.nisrulz.sensey.Sensey;
 import com.sdsmdg.tastytoast.TastyToast;
@@ -37,6 +38,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.rong.imkit.RongIM;
+import io.rong.imlib.RongIMClient;
+import io.rong.imlib.model.Message;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -119,9 +123,24 @@ public class MainActivity extends AppCompatActivity {
         realName = intent.getStringExtra("realName");
         token = intent.getStringExtra("token");
 
-//        initView();
+        //        initView();
         initBottomNavigation();
         initData();
+
+        RongIM.init(MainActivity.this);
+
+        RongIM.setOnReceiveMessageListener(new RongIMClient.OnReceiveMessageListener() {
+            @Override
+            public boolean onReceived(Message message, int i) {
+                Fragment_ClassBox fragment = (Fragment_ClassBox) mFragments.get(0);
+                int count = fragment.groupChatManager.getInteger(message.getTargetId());
+                fragment.groupChatManager.put(message.getTargetId(), count + 1);
+                fragment.updateUI(message.getTargetId());
+                return false;
+            }
+        });
+
+        RongIM.setConversationClickListener(new MyConversationClickListener());
 
         //防止在商城搜索时导航栏上移到键盘上方
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);

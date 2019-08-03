@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -66,7 +67,6 @@ import org.jetbrains.annotations.NotNull;
 import io.rong.imkit.RongIM;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
-import io.rong.imlib.model.Message;
 import io.rong.imlib.model.UserInfo;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -74,6 +74,8 @@ import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import q.rorbin.badgeview.Badge;
+import q.rorbin.badgeview.QBadgeView;
 
 import static io.rong.imkit.RongIM.connect;
 
@@ -83,6 +85,8 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     private AlertDialog.Builder alertBuilder;
 
     private static final String TAG = "Activity_Main_Timetable";
+
+    public JSONObject groupChatManager = new JSONObject();
 
     //控件
     Activity_TimetableView mTimetableView;
@@ -126,9 +130,26 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
 
     private UPDATEcastReceiver updatereceiver;
     private UpdateStateReceiver updateStateReceiver;
+    private UpdateGroupIdReceiver updateGroupIdReceiver;
     private LocalBroadcastManager localBroadcastManager;
 
     private Context mcontext;
+
+    /*
+    设置handler接收网络线程的信号并处理
+     */
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler(){
+        public void handleMessage(Message msg){
+            switch (msg.what){
+                case 1:
+                    initTimetableView();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return  inflater.inflate(R.layout.activity__main__timetable, container, false);
@@ -160,75 +181,28 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
 
         //广播接收
         localBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
-        //广播接收
+
+        // 加载页面的广播
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("com.example.broadcasttest.LOCAL_BROADCAST1");
         updatereceiver = new UPDATEcastReceiver();
         localBroadcastManager.registerReceiver(updatereceiver, intentFilter);
 
-
+        // 实名认证的广播
         IntentFilter intentFilter1 = new IntentFilter();
         intentFilter1.addAction("com.example.broadcasttest.UPDATE_STATE");
         updateStateReceiver = new UpdateStateReceiver();
         localBroadcastManager.registerReceiver(updateStateReceiver, intentFilter1);
 
-        RongIM.init(getActivity());
+        // 获得GroupId的广播
+        IntentFilter intentFilter2 = new IntentFilter();
+        intentFilter2.addAction("com.example.broadcasttest.LOCAL_BROADCAST2");
+        updateGroupIdReceiver = new UpdateGroupIdReceiver();
+        localBroadcastManager.registerReceiver(updateGroupIdReceiver, intentFilter2);
 
         initClassBoxData();
 
         initTimetableView();
-
-        //聊天登录函数
-        if (isAuthentation)
-            connect(token, new RongIMClient.ConnectCallback() {
-            @Override
-            public void onTokenIncorrect() {
-
-            }
-
-            @Override
-            public void onSuccess(String s) {
-                // 去执行下面的函数\
-                Log.d("LoginActivity", "--onSuccess");
-
-                // 登陆成功
-                Toast.makeText(getActivity(), "可以使用聊天", Toast.LENGTH_SHORT).show();
-                RongIM.getInstance().setCurrentUserInfo(new UserInfo(userId, realName, Uri.parse(imageUrl)));
-                RongIM.getInstance().setMessageAttachedUserInfo(true);
-                RongIM.getInstance().enableNewComingMessageIcon(true);//显示新消息提醒
-                RongIM.getInstance().enableUnreadMessageIcon(true);//显示未读消息数目
-
-
-
-//                RongIM.getInstance().getUnreadCount(Conversation.ConversationType.GROUP, "0001", new RongIMClient.ResultCallback<Integer>() {
-//                    @Override
-//                    public void onSuccess(Integer integer) {
-////                        got.setText(integer);
-//                        Log.d(TAG, String.valueOf(integer));
-//                    }
-//
-//                    @Override
-//                    public void onError(RongIMClient.ErrorCode errorCode) {
-//                        Log.d(TAG, String.valueOf(errorCode.getValue()));
-//                    }
-//                });
-            }
-
-            @Override
-            public void onError(RongIMClient.ErrorCode errorCode) {
-
-            }
-        });
-
-        //聊天信息的监听器(登录之后时时刻刻收到的信息)
-        RongIM.setOnReceiveMessageListener(new RongIMClient.OnReceiveMessageListener() {
-            @Override
-            public boolean onReceived(Message message, int i) {
-                Log.d(TAG, "onReceived: " + message.getTargetId());
-                return false;
-            }
-        });
-
     }
 
     /**
@@ -241,17 +215,10 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                 .path(getCacheDir(myContext.getActivity()))
                 .remove("classBox");
 
-//        mClassBoxData="[{'id':'123', 'name':'计算机', 'teacher':'ABC', 'room':'A1-101', 'stringweeklist':'5,6,7', 'start':'1', 'step':'4', 'day':'2', 'messagecount':'3'},  {'id':'456', 'name':'网络工程', 'teacher':'ABC', 'room':'A1-101', 'stringweeklist':'5,6,7', 'start':'1', 'step':'4', 'day':'4', 'messagecount':'0'}]";
-
-
-        mClassBoxData= Cache.with(this.getActivity())
+        mClassBoxData = Cache.with(this.getActivity())
                 .path(getCacheDir(this.getActivity()))
                 .getCache("classBox", String.class);
 
-//        Log.v("mySubjects1",mClassBoxData);
-//        Cache.with(myContext.getActivity())
-//                .path(getCacheDir(myContext.getActivity()))
-//                .saveCache("classBox", mClassBoxData);
 
         if (mClassBoxData==null||mClassBoxData.length()<=0){
             //TODO  mClassBoxData=接收的json字符串
@@ -288,21 +255,38 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                             .path(getCacheDir(myContext.getActivity()))
                             .saveCache("classBox", mClassBoxData);
 
-                    Intent intent1 = new Intent("com.example.broadcasttest.LOCAL_BROADCAST1");
-                    localBroadcastManager.sendBroadcast(intent1);
+                    // 获取课程id 和未读消息数的 Key Value 关系
+                    groupChatManager = getGroupChatManager(mySubjects);
+
+                    Message message = new Message();
+                    message.what = 1;
+                    handler.sendMessage(message);
+
+                    // 发送登录聊天的广播
+                    Intent intent2 = new Intent("com.example.broadcasttest.LOCAL_BROADCAST2");
+                    localBroadcastManager.sendBroadcast(intent2);
                 }
             });
         } else {
 
-            Log.v("here", "here");
-
             mySubjects.clear();
             mySubjects = JSON.parseArray(mClassBoxData, MySubject.class);
 
-            Log.v("mySubjects", mySubjects.toString());
+            //获取 课程id 和未读消息数的 Key Value 关系
+            groupChatManager = getGroupChatManager(mySubjects);
+
+            Message message = new Message();
+            message.what = 1;
+            handler.sendMessage(message);
+
+            // 发送登录聊天的广播
+            Intent intent2 = new Intent("com.example.broadcasttest.LOCAL_BROADCAST2");
+            localBroadcastManager.sendBroadcast(intent2);
         }
 
     }
+
+
     /*
     * 获得缓存地址
     * */
@@ -393,12 +377,13 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     /**
      * 更新一下，防止因程序在后台时间过长（超过一天）而导致的日期或高亮不准确问题。
      */
-    @Override
-    public void onStart() {
-        super.onStart();
-        mTimetableView.onDateBuildListener()
-                .onHighLight();
-    }
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        initTimetableView();
+//        mTimetableView.onDateBuildListener()
+//                .onHighLight();
+//    }
 
     /**
      * 周次选择布局的左侧被点击时回调<br/>
@@ -444,6 +429,8 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     private ImageView imageViewRemoveClass;
     private ImageView imageViewCloseDialog;
     private LinearLayout linearLayoutChat;
+    private LinearLayout linearLayoutCollect;
+    private Badge badge;
 
     protected void showDialog(final Schedule bean){
         LayoutInflater inflater=LayoutInflater.from(this.getActivity());
@@ -458,7 +445,7 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         imageViewRemoveClass=myview.findViewById(R.id.delete_class);
         imageViewCloseDialog=myview.findViewById(R.id.close_dialog);
         linearLayoutChat = myview.findViewById(R.id.course_chat);
-
+        linearLayoutCollect = myview.findViewById(R.id.course_file);
 
 
         textViewforcoursename.setText(bean.getName());
@@ -470,6 +457,10 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         builder.setView(myview);
         coursedetail_dialog=builder.create();
         coursedetail_dialog.show();
+
+        if (bean.getMessagecount() != 0) {
+            badge = new QBadgeView(getActivity()).bindTarget(linearLayoutChat).setBadgeNumber(bean.getMessagecount());
+        }
 
         imageViewCloseDialog.setOnClickListener(new OnClickListener() {
             @Override
@@ -504,8 +495,18 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         linearLayoutChat.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                groupChatManager.put(bean.getId(), 0);
                 RongIM.getInstance().startGroupChat(getContext(), bean.getId(), bean.getName());
+                updateUI(bean.getId());
+                badge.hide(false);
+            }
+        });
+
+        linearLayoutCollect.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO 点击后展示这门课的内容
+
             }
         });
 
@@ -706,6 +707,62 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         }
     }
 
+    class UpdateGroupIdReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(final Context context, Intent intent) {
+            if (isAuthentation)
+                connect(token, new RongIMClient.ConnectCallback() {
+                    @Override
+                    public void onTokenIncorrect() {
+
+                    }
+
+                    @Override
+                    public void onSuccess(String s) {
+
+                        Log.d("LoginActivity", "--onSuccess");
+
+                        // 登陆成功
+                        Toast.makeText(context, "可以使用聊天", Toast.LENGTH_SHORT).show();
+
+                        RongIM.getInstance().setCurrentUserInfo(new UserInfo(userId, realName, Uri.parse(imageUrl)));
+                        RongIM.getInstance().setMessageAttachedUserInfo(true);
+                        RongIM.getInstance().enableNewComingMessageIcon(true);//显示新消息提醒
+                        RongIM.getInstance().enableUnreadMessageIcon(true);//显示未读消息数目
+
+                        for (final String groupId :groupChatManager.keySet()) {
+                            RongIM.getInstance().getUnreadCount(Conversation.ConversationType.GROUP, groupId, new RongIMClient.ResultCallback<Integer>() {
+                                @Override
+                                public void onSuccess(Integer integer) {
+                                    groupChatManager.put(groupId, integer);
+                                    for(int i = 0 ; i < mySubjects.size() ; i++){
+                                        if(mySubjects.get(i).getId().equals(groupId))
+                                            mySubjects.get(i).setMessageCount(integer);
+                                    }
+
+                                    Message message = new Message();
+                                    message.what = 1;
+                                    handler.sendMessage(message);
+                                }
+
+                                @Override
+                                public void onError(RongIMClient.ErrorCode errorCode) {
+                                    Log.d(TAG, String.valueOf(errorCode.getValue()));
+                                }
+                            });
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(RongIMClient.ErrorCode errorCode) {
+
+                    }
+                });
+        }
+    }
+
     class UpdateStateReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent){
@@ -773,6 +830,9 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     public void onDestroy(){
         super.onDestroy();
         localBroadcastManager.unregisterReceiver(updatereceiver);
+        localBroadcastManager.unregisterReceiver(updateStateReceiver);
+        localBroadcastManager.unregisterReceiver(updateGroupIdReceiver);
+        RongIM.getInstance().logout();
     }
 
     public void removeSubject (MySubject subject) {
@@ -830,6 +890,23 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         localBroadcastManager.sendBroadcast(intent1);
     }
 
+    public JSONObject getGroupChatManager(List<MySubject> subjectList){
+        JSONObject object = new JSONObject();
+        for(MySubject subject : subjectList) {
+            object.put(subject.getId(), 0);
+        }
+        return object;
+    }
 
+    public void updateUI(String groupId) {
+        for(int i = 0 ; i < mySubjects.size() ; i++){
+            if(mySubjects.get(i).getId().equals(groupId))
+                mySubjects.get(i).setMessageCount(groupChatManager.getInteger(groupId));
+        }
+
+        Message message = new Message();
+        message.what = 1;
+        handler.sendMessage(message);
+    }
 
 }
