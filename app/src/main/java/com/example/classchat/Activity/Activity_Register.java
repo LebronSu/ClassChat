@@ -61,83 +61,83 @@ public class Activity_Register extends AppCompatActivity implements View.OnClick
         }
     };
 
+    EventHandler eventHandler = new EventHandler() {
+        public void afterEvent(int event, int result, Object data) {
+            // afterEvent会在子线程被调用，因此如果后续有UI相关操作，需要将数据发送到UI线程
+            Message msg = new Message();
+            msg.arg1 = event;
+            msg.arg2 = result;
+            msg.obj = data;
+            new Handler(Looper.getMainLooper(), new Handler.Callback() {
+                @Override
+                public boolean handleMessage(final Message msg) {
+                    int event = msg.arg1;
+                    int result = msg.arg2;
+                    Object data = msg.obj;
+                    if (event == SMSSDK.EVENT_GET_VERIFICATION_CODE) {
+                        if (result == SMSSDK.RESULT_COMPLETE) {
+                            // 处理成功得到验证码的结果
+                            Toast.makeText(Activity_Register.this, "请查收短信", Toast.LENGTH_SHORT).show();
+                            // 请注意，此时只是完成了发送验证码的请求，验证码短信还需要几秒钟之后才送达
+                        } else {
+                            // 处理错误的结果
+                            editSMS.setText(null);
+                            Toast.makeText(Activity_Register.this, "验证码服务出错，请稍后再试试？", Toast.LENGTH_SHORT).show();
+                            ((Throwable) data).printStackTrace();
+                        }
+                    } else if (event == SMSSDK.EVENT_SUBMIT_VERIFICATION_CODE) {
+                        if (result == SMSSDK.RESULT_COMPLETE) {
+                            // 处理验证码验证通过的结果
+
+                            /*
+                            建立网络线程询问能否注册
+                             */
+                            RequestBody requestBody = new FormBody.Builder()
+                                    .add("username", editTextP.getText().toString())
+                                    .add("password", editTextCT.getText().toString())
+                                    .build();   //构建请求体
+
+                            Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8081/register", requestBody, new okhttp3.Callback() {
+                                @Override
+                                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                                    // 得到服务器返回的具体内容
+                                    assert response.body() != null;
+                                    boolean responseData = Boolean.parseBoolean(response.body().string());
+
+                                    Message message = new Message();    // 准备发送信息通知UI线程
+
+                                    if (responseData) {
+                                        message.what = REGISTER_SUCCESS;
+                                        handler.sendMessage(message);   // 注册成功
+                                    } else {
+                                        message.what = REGISTER_FAILED;
+                                        handler.sendMessage(message);   // 注册失败
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                    // 在这里对异常情况进行处理
+                                }
+                            });
+                        } else {
+                            // TODO 处理错误的结果
+                            Toast.makeText(Activity_Register.this, "验证码错误", Toast.LENGTH_SHORT).show();
+                            ((Throwable) data).printStackTrace();
+                        }
+                    }
+                    // TODO 其他接口的返回结果也类似，根据event判断当前数据属于哪个接口
+                    return false;
+                }
+            }).sendMessage(msg);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity__register);
         init();
-        EventHandler eventHandler = new EventHandler() {
-            public void afterEvent(int event, int result, Object data) {
-                // afterEvent会在子线程被调用，因此如果后续有UI相关操作，需要将数据发送到UI线程
-                Message msg = new Message();
-                msg.arg1 = event;
-                msg.arg2 = result;
-                msg.obj = data;
-                new Handler(Looper.getMainLooper(), new Handler.Callback() {
-                    @Override
-                    public boolean handleMessage(final Message msg) {
-                        int event = msg.arg1;
-                        int result = msg.arg2;
-                        Object data = msg.obj;
-                        if (event == SMSSDK.EVENT_GET_VERIFICATION_CODE) {
-                            if (result == SMSSDK.RESULT_COMPLETE) {
-                                // 处理成功得到验证码的结果
-
-                                Toast.makeText(Activity_Register.this, "请查收短信", Toast.LENGTH_SHORT).show();
-
-                                // 请注意，此时只是完成了发送验证码的请求，验证码短信还需要几秒钟之后才送达
-                            } else {
-                                // 处理错误的结果
-                                editSMS.setText(null);
-                                ((Throwable) data).printStackTrace();
-                            }
-                        } else if (event == SMSSDK.EVENT_SUBMIT_VERIFICATION_CODE) {
-                            if (result == SMSSDK.RESULT_COMPLETE) {
-                                // 处理验证码验证通过的结果
-
-                                /*
-                                建立网络线程询问能否注册
-                                 */
-                                RequestBody requestBody = new FormBody.Builder()
-                                        .add("username", editTextP.getText().toString())
-                                        .add("password", editTextCT.getText().toString())
-                                        .build();   //构建请求体
-
-                                Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8081/register", requestBody, new okhttp3.Callback() {
-                                    @Override
-                                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                                        // 得到服务器返回的具体内容
-                                        assert response.body() != null;
-                                        boolean responseData = Boolean.parseBoolean(response.body().string());
-
-                                        Message message = new Message();    // 准备发送信息通知UI线程
-
-                                        if (responseData) {
-                                            message.what = REGISTER_SUCCESS;
-                                            handler.sendMessage(message);   // 注册成功
-                                        } else {
-                                            message.what = REGISTER_FAILED;
-                                            handler.sendMessage(message);   // 注册失败
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                                        // 在这里对异常情况进行处理
-                                    }
-                                });
-                            } else {
-                                // TODO 处理错误的结果
-                                Toast.makeText(Activity_Register.this, "验证码错误", Toast.LENGTH_SHORT).show();
-                                ((Throwable) data).printStackTrace();
-                            }
-                        }
-                        // TODO 其他接口的返回结果也类似，根据event判断当前数据属于哪个接口
-                        return false;
-                    }
-                }).sendMessage(msg);
-            }
-        };
         SMSSDK.registerEventHandler(eventHandler);
     }
 
@@ -210,5 +210,11 @@ public class Activity_Register extends AppCompatActivity implements View.OnClick
             SMSSDK.submitVerificationCode("86", editTextP.getText().toString(), editSMS.getText().toString());
 
         }
+    }
+
+    // 使用完EventHandler需注销，否则可能出现内存泄漏
+    protected void onDestroy() {
+        super.onDestroy();
+        SMSSDK.unregisterEventHandler(eventHandler);
     }
 }

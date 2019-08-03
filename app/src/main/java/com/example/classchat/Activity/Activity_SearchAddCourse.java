@@ -272,7 +272,6 @@ public class Activity_SearchAddCourse extends AppCompatActivity {
                                 @Override
                                 public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                                     boolean responseData = Boolean.parseBoolean(response.body().string());
-                                    System.out.println(responseData);
                                     if (responseData) {
 
                                         mClassBoxData= Cache.with(v.getContext())
