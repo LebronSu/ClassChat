@@ -193,9 +193,12 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
 
                 // 登陆成功
                 Toast.makeText(getActivity(), "可以使用聊天", Toast.LENGTH_SHORT).show();
-
                 RongIM.getInstance().setCurrentUserInfo(new UserInfo(userId, realName, Uri.parse(imageUrl)));
                 RongIM.getInstance().setMessageAttachedUserInfo(true);
+                RongIM.getInstance().enableNewComingMessageIcon(true);//显示新消息提醒
+                RongIM.getInstance().enableUnreadMessageIcon(true);//显示未读消息数目
+
+
 
 //                RongIM.getInstance().getUnreadCount(Conversation.ConversationType.GROUP, "0001", new RongIMClient.ResultCallback<Integer>() {
 //                    @Override
@@ -501,6 +504,7 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         linearLayoutChat.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 RongIM.getInstance().startGroupChat(getContext(), bean.getId(), bean.getName());
             }
         });
