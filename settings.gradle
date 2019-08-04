@@ -1,1 +1,1 @@
-include ':app', ':library_activity_timetable', ':library_cache', ':library', ':IMLib', ':IMKit'
+include ':app', ':library_activity_timetable', ':library_cache', ':library', ':IMLib', ':IMKit', ':Amap_2DMap_V5.2.0_20170627', ':AMap_Channel_Location_V1.4.0_20160708'
