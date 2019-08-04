@@ -177,8 +177,8 @@ public class Activity_IdAuthentation extends AppCompatActivity {
                 String responsedata = response.body().string();
                 System.out.println(responsedata);
                 JSONObject jsonObject = JSON.parseObject(responsedata);
-                uni = jsonObject.getJSONArray("school");
-                col = jsonObject.getJSONArray("university");
+                col = jsonObject.getJSONArray("school");
+                uni = jsonObject.getJSONArray("university");
                 Message message = new Message();
                 message.what = 1;
                 handler.sendMessage(message);

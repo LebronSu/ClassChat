@@ -5,7 +5,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.classchat.R;
 
 import io.rong.imkit.RongIM;
 import io.rong.imlib.model.Conversation;
@@ -58,9 +67,38 @@ public class MyConversationClickListener implements RongIM.ConversationClickList
     }
 
     @Override
-    public boolean onMessageLongClick(Context context, View view, Message message) {
+    public boolean onMessageLongClick(final Context context, View view, final Message message) {
         if (message.getContent() instanceof ImageMessage || message.getContent() instanceof FileMessage) {
             // TODO 自定义对话框,并定义点击事件
+            View v = LayoutInflater.from(context).inflate(R.layout.conversation_popupwindow , null ,false);
+            Button btn_collect = v.findViewById(R.id.btn_collect);
+            final PopupWindow popupWindow = new PopupWindow(v , ViewGroup.LayoutParams.WRAP_CONTENT ,ViewGroup.LayoutParams.WRAP_CONTENT , true );
+            popupWindow.setTouchable(true);
+            popupWindow.setTouchInterceptor(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return false;
+                    // 这里如果返回true的话，touch事件将被拦截
+                    // 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
+                }
+            });
+
+            btn_collect.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(!message.getReceivedStatus().isDownload()){
+                        Toast.makeText(context , "请先将文件保存再收藏.." , Toast.LENGTH_SHORT).show();
+                        popupWindow.dismiss();
+                    }else{
+                        Toast.makeText(context , "文件已收藏至藏经阁.." , Toast.LENGTH_SHORT).show();
+                        popupWindow.dismiss();
+                    }
+
+
+                }
+            });
+            popupWindow.showAsDropDown(view );
+
 
             return true;
         }else

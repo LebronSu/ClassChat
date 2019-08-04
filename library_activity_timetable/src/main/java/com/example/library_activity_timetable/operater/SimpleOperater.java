@@ -177,7 +177,7 @@ public class SimpleOperater extends AbsOperater {
         if (isThisWeek) {
             textView.setTextColor(Color.parseColor("#FFFFFF"));
             int count =subject.getMessagecount();
-            if (count > 1) {
+            if (count >=1 ) {
                 countTextView.setVisibility(View.VISIBLE);
                 countTextView.setText(count + "");
             }
