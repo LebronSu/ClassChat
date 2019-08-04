@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -22,6 +24,9 @@ import android.view.WindowManager;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
 import com.example.classchat.Fragment.Fragment_ClassBox;
 import com.example.classchat.Fragment.Fragment_Forum;
 import com.example.classchat.Fragment.Fragment_SelfInformationCenter;
@@ -35,8 +40,11 @@ import com.sdsmdg.tastytoast.TastyToast;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import io.rong.imkit.RongIM;
 import io.rong.imlib.RongIMClient;
@@ -48,6 +56,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
 
     //    private Toolbar mToolbar;
     private BottomNavigationView mBottomNavigationView;
@@ -61,9 +71,12 @@ public class MainActivity extends AppCompatActivity {
     private String proUni;
     private String realName;
     private String token;
+    private String headUrl;
 
     private FragmentManager manager = getSupportFragmentManager();
     private long firstTime;// 记录点击返回时第一次的时间毫秒值
+
+
 
     List<Fragment> mFragments;
     AlertDialog builder=null;
@@ -95,7 +108,8 @@ public class MainActivity extends AppCompatActivity {
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog,
                                                     int whichButton) {
-                                    MainActivity.this.finish();
+
+                                    System.exit(0);
                                 }
                             })
                     .setNegativeButton("取消",
@@ -114,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Intent intent = getIntent();
+        Log.d(TAG, "onCreate: "+ sHA1(MainActivity.this));
         correctId = intent.getStringExtra("userId");
         isAuthentation = intent.getBooleanExtra("userAuthentationStatus", false);
         nickName = intent.getStringExtra("userName");
@@ -122,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
         proUni = intent.getStringExtra("proUni");
         realName = intent.getStringExtra("realName");
         token = intent.getStringExtra("token");
+        headUrl = intent.getStringExtra("headUrl");
 
         //        initView();
         initBottomNavigation();
@@ -140,10 +156,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        RongIM.setConversationClickListener(new MyConversationClickListener());
+        RongIM.setConversationClickListener(new MyConversationClickListener(mFragments.get(0)));
 
         //防止在商城搜索时导航栏上移到键盘上方
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
+
+
+
     }
 
 //    public void initView() {
@@ -252,4 +272,33 @@ public class MainActivity extends AppCompatActivity {
 
     public String getToken(){return token;}
 
+    public static String sHA1(Context context) {
+        try {
+            PackageInfo info = context.getPackageManager().getPackageInfo(
+                    context.getPackageName(), PackageManager.GET_SIGNATURES);
+            byte[] cert = info.signatures[0].toByteArray();
+            MessageDigest md = MessageDigest.getInstance("SHA1");
+            byte[] publicKey = md.digest(cert);
+            StringBuffer hexString = new StringBuffer();
+            for (int i = 0; i < publicKey.length; i++) {
+                String appendString = Integer.toHexString(0xFF & publicKey[i])
+                        .toUpperCase(Locale.US);
+                if (appendString.length() == 1)
+                    hexString.append("0");
+                hexString.append(appendString);
+                hexString.append(":");
+            }
+            String result = hexString.toString();
+            return result.substring(0, result.length()-1);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String getHeadUrl() {
+        return headUrl;
+    }
 }

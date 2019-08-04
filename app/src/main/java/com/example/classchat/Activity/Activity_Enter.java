@@ -55,6 +55,7 @@ public class Activity_Enter extends AppCompatActivity implements View.OnClickLis
     // 登录时就返回必须的数据，这里先定义好
     private boolean isAuthentation;
     private String imageUrl;
+    private String headUrl;
     private String nickName;
     private String proUni;
     private String realName;
@@ -97,6 +98,7 @@ public class Activity_Enter extends AppCompatActivity implements View.OnClickLis
                     intent.putExtra("proUni", proUni);
                     intent.putExtra("token", token);
                     intent.putExtra("realName", realName);
+                    intent.putExtra("headUrl", headUrl);
                     loadingForLogin.dismiss();
                     startActivity(intent);
                     finish();
@@ -246,6 +248,7 @@ public class Activity_Enter extends AppCompatActivity implements View.OnClickLis
                     realName = jsonObject.getString("realname");
                     proUni = jsonObject.getString("university") + "_" + jsonObject.getString("school");
                     token = jsonObject.getString("token");
+                    headUrl = jsonObject.getString("headUrl");
                     message.what = LOGIN_SUCCESS;
                     handler.sendMessage(message);
                 }

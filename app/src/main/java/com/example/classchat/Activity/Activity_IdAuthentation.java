@@ -24,6 +24,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -68,6 +69,8 @@ public class Activity_IdAuthentation extends AppCompatActivity {
     private Button confirm;
     private Button back;
     private Context mContext;
+
+    private static final String TAG = "Activity_IdAuthentation";
 
     private Boolean face_checked = false;
     private Boolean card_checked = false;
@@ -258,6 +261,8 @@ public class Activity_IdAuthentation extends AppCompatActivity {
                     loadingForAddCommodity.setCanceledOnTouchOutside(false); //
                     loadingForAddCommodity.setMessage("正在上传....");  //等待动画的标题
                     loadingForAddCommodity.show();  //显示等待动画
+                    Log.d(TAG, "university+ "+ university_);
+                    Log.d(TAG, "school "+ school_);
                     RequestBody requestBody = new MultipartBody.Builder()
                             .setType(MultipartBody.FORM)
                             .addFormDataPart("userId", userId_)
@@ -278,6 +283,7 @@ public class Activity_IdAuthentation extends AppCompatActivity {
                         @Override
                         public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                             Boolean responseData = Boolean.valueOf(response.body().string());
+                            Log.d(TAG, "onResponse: "+ responseData);
                             if (responseData) {
                                 Message message = new Message();
                                 message.what = 2;
