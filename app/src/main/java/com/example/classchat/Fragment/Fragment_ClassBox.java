@@ -48,6 +48,7 @@ import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.example.classchat.Activity.Activity_AddSearchCourse;
 import com.example.classchat.Activity.Activity_AutoPullCourseFromWeb;
+import com.example.classchat.Activity.Activity_CourseNote;
 import com.example.classchat.Activity.Activity_Enter;
 import com.example.classchat.Activity.Activity_SearchAddCourse;
 import com.example.classchat.Activity.MainActivity;
@@ -197,9 +198,30 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                     break;
                 case 3:
                     Toast.makeText(getContext() , "位置有误，签到失败！" , Toast.LENGTH_SHORT).show();
-                case 4:
+                case 5:
                     loadingForLogin.dismiss();
                     Toast.makeText(getContext(),"签到成功！" ,Toast.LENGTH_SHORT).show();
+                case 4:
+                    RequestBody requestBody = new FormBody.Builder()
+                            .add("groupId", signstatus.getString("groupId"))
+                            .add("userId" , userId)
+                            .build();
+                    Util_NetUtil.sendOKHTTPRequest("", requestBody, new okhttp3.Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+                        }
+
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                            Boolean responseData = Boolean.valueOf(response.body().string());
+                            if (responseData) {
+                                Message message = new Message();
+                                message.what = 5;
+                                handler.sendMessage(message);
+                            }
+                        }
+                    });
                 default:
                     break;
             }
@@ -601,7 +623,8 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         linearLayoutNote.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(getContext(), Activity_CourseNote.class);
+                startActivity(intent);
             }
         });
 

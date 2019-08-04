@@ -13,4 +13,5 @@
     <color name="deep_transparent">#bb000000</color>
     <color name="grey_normal_bg">#EEEEEE</color>
     <color name="black">#000000</color>
+    <color name="smssdk_white">#ffffffff</color>
 </resources>

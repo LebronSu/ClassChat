@@ -6,29 +6,25 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK.STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <!-- 这个权限用于进行网络定位-->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
-    <!-- 这个权限用于访问GPS定位-->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
-    <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位-->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
-    <!-- 获取运营商信息，用于支持提供运营商信息相关的接口-->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
-    <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
-
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- 这个权限用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 这个权限用于访问GPS定位 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- 获取运营商信息，用于支持提供运营商信息相关的接口 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
     <application
-        android:largeHeap="true"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Activity.Activity_Register"></activity>
+        <activity android:name=".Activity.Activity_Add"></activity>
+        <activity android:name=".Activity.Activity_Select" />
+        <activity android:name=".Activity.Activity_Register" />
         <activity android:name=".Activity.Activity_Modify" />
         <activity android:name=".Activity.Activity_Password" />
         <activity android:name=".Activity.Activity_Enter" />
@@ -56,12 +52,11 @@
         <activity android:name=".Activity.Activity_CourseNote" />
         <activity android:name=".Activity.Activity_CourseData" />
         <activity android:name=".Activity.Activity_ClassGroupChat" />
-        <activity android:name=".Activity.Activity_Market_GoodsDetail"/>
-        <activity android:name=".Activity.Activity_Market_ShoppingCart"/>
-        <activity android:name=".Activity.Activity_AutoPullCourseFromWeb"/>
-        <activity android:name=".Activity.Activity_Market_MyGoods"/>
-        <activity android:name=".Activity.Activity_Market_AddCommodity"></activity>
-
+        <activity android:name=".Activity.Activity_Market_GoodsDetail" />
+        <activity android:name=".Activity.Activity_Market_ShoppingCart" />
+        <activity android:name=".Activity.Activity_AutoPullCourseFromWeb" />
+        <activity android:name=".Activity.Activity_Market_MyGoods" />
+        <activity android:name=".Activity.Activity_Market_AddCommodity" />
         <activity
             android:name=".Activity.Activity_Conversation"
             android:launchMode="singleTask"
@@ -75,16 +70,13 @@
                 <data
                     android:host="com.example.classchat"
                     android:pathPrefix="/conversation/"
-                    android:scheme="rong">
-                </data>
+                    android:scheme="rong" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".Activity.MainActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTask">
-        </activity>
+            android:launchMode="singleTask" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -98,12 +90,10 @@
 
         <meta-data
             android:name="classchat"
-            android:value="84aabe90489f136d6b2aa104263862aa"/>
+            android:value="84aabe90489f136d6b2aa104263862aa" />
         <meta-data
             android:name="com.example.classchat.API_KEY"
-            android:value="efIOrRcslG8bYttDU2sVnvOcANS84TaQ" >
-        </meta-data>
-
+            android:value="efIOrRcslG8bYttDU2sVnvOcANS84TaQ" />
     </application>
 
 </manifest>
