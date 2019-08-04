@@ -38,11 +38,6 @@ import java.util.List;
  * {@link #updateSlideView()}
  * {@link #updateDateView()}
  * {@link #updateView()}
- *
- * 文档参考 https://github.com/zfman/TimetableView/wiki/%E6%9C%80%E6%96%B0%E6%96%87%E6%A1%A3
- * @author Administrator
- * @see AbsOperater
- * @see SimpleOperater
  */
 public class Activity_TimetableView extends LinearLayout {
 

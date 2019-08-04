@@ -26,10 +26,10 @@
     <bool name="rc_stop_custom_service_when_quit">true</bool>
 
     <!-- 默认图片保存路径，在会话界面查看大图，长按时选择保存，会使用这个配置-->
-    <string name="rc_image_default_saved_path">/RongCloud/Image/</string>
+    <string name="rc_image_default_saved_path" translatable="false">/RongCloud/Image/</string>
 
     <!-- 设置是否支持消息撤回-->
-    <bool name="rc_enable_message_recall">false</bool>
+    <bool name="rc_enable_message_recall">true</bool>
     <!-- 消息撤回有效时间（单位：秒）-->
     <integer name="rc_message_recall_interval">180</integer>
 
@@ -58,12 +58,12 @@
 
 
     <!--是否允许 WebView 加载 JavaScript-->
-    <bool name="rc_set_java_script_enabled">false</bool>
+    <bool name="rc_set_java_script_enabled">true</bool>
 
     <!--在线时是否自动下载高质量语音消息-->
     <bool name="rc_enable_automatic_download_voice_msg">true</bool>
 
     <!--gif 自动下载的最大值， 超过就需点击手动下载（单位 KB）-->
-    <integer name="rc_gifmsg_auto_download_size">1024</integer>
+    <integer name="rc_gifmsg_auto_download_size">2048</integer>
 
 </resources>

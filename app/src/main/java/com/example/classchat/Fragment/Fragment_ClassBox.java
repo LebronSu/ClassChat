@@ -16,6 +16,7 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.menu.MenuPopupHelper;
@@ -49,6 +50,7 @@ import com.example.library_activity_timetable.view.WeekView;
 import com.example.library_cache.Cache;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -87,6 +89,7 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     private static final String TAG = "Activity_Main_Timetable";
 
     public JSONObject groupChatManager = new JSONObject();
+
 
     //控件
     Activity_TimetableView mTimetableView;
@@ -430,7 +433,7 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     private ImageView imageViewCloseDialog;
     private LinearLayout linearLayoutChat;
     private LinearLayout linearLayoutCollect;
-    private Badge badge;
+    private Badge badge = null;
 
     protected void showDialog(final Schedule bean){
         LayoutInflater inflater=LayoutInflater.from(this.getActivity());
@@ -498,7 +501,8 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                 groupChatManager.put(bean.getId(), 0);
                 RongIM.getInstance().startGroupChat(getContext(), bean.getId(), bean.getName());
                 updateUI(bean.getId());
-                badge.hide(false);
+                if(!(null == badge ))
+                    badge.hide(false);
             }
         });
 
@@ -506,7 +510,12 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
             @Override
             public void onClick(View v) {
                 //TODO 点击后展示这门课的内容
-
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                File file = new File(Environment.DIRECTORY_DOWNLOADS);
+                Uri uri =FileProvider.getUriForFile(getContext() , "com.example.classchat.FileProvider" , file);
+                intent.setDataAndType(uri , "file/*.*");
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                getContext().startActivity(intent);
             }
         });
 
@@ -800,20 +809,6 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                             // 登陆成功
                             Toast.makeText(getActivity(), "可以使用聊天", Toast.LENGTH_SHORT).show();
 
-
-                            //TODO 以下就是获取未读消息数
-//                            RongIM.getInstance().getUnreadCount(Conversation.ConversationType.GROUP, "0001", new RongIMClient.ResultCallback<Integer>() {
-//                                @Override
-//                                public void onSuccess(Integer integer) {
-////                        got.setText(integer);
-//                                    Log.d(TAG, String.valueOf(integer));
-//                                }
-//
-//                                @Override
-//                                public void onError(RongIMClient.ErrorCode errorCode) {
-//                                    Log.d(TAG, String.valueOf(errorCode.getValue()));
-//                                }
-//                            });
                         }
 
                         @Override
