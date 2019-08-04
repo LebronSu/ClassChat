@@ -8,11 +8,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -34,6 +38,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
 import com.example.classchat.Activity.Activity_AddSearchCourse;
 import com.example.classchat.Activity.Activity_AutoPullCourseFromWeb;
 import com.example.classchat.Activity.Activity_Enter;
@@ -42,6 +54,7 @@ import com.example.classchat.Activity.MainActivity;
 import com.example.classchat.Object.MySubject;
 import com.example.classchat.R;
 import com.example.classchat.Util.Util_NetUtil;
+import com.example.classchat.Util.Util_PictureTool;
 import com.example.library_activity_timetable.Activity_TimetableView;
 import com.example.library_activity_timetable.listener.ISchedule;
 import com.example.library_activity_timetable.listener.IWeekView;
@@ -51,6 +64,7 @@ import com.example.library_cache.Cache;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -73,12 +87,15 @@ import io.rong.imlib.model.UserInfo;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import q.rorbin.badgeview.Badge;
 import q.rorbin.badgeview.QBadgeView;
 
+import static android.app.Activity.RESULT_OK;
 import static io.rong.imkit.RongIM.connect;
 
 
@@ -86,9 +103,29 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
 
     private AlertDialog.Builder alertBuilder;
 
+    //初始化照片URI
+    private Uri imageUri;
+
+    //初始化 登录等待 控件
+    private ProgressDialog loadingForLogin;
+
     private static final String TAG = "Activity_Main_Timetable";
 
     public JSONObject groupChatManager = new JSONObject();
+
+    //百度地图客户端
+    private LocationClient client;
+    private double now_longitude;
+    private double now_latitude;
+
+    //用来记录签到状态的JSON 包括 课程id 是否能签到 经纬度
+    public JSONObject signstatus = new JSONObject();
+    public JSONObject getSignstatus() {
+        return signstatus;
+    }
+
+
+
 
 
     //控件
@@ -110,6 +147,11 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
 
     // 头像Url
     private String imageUrl;
+
+    // 真人头像
+    private String headUrl;
+
+    private Bitmap bitmap;
 
     // 学生真实姓名
     private String realName;
@@ -148,6 +190,16 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                 case 1:
                     initTimetableView();
                     break;
+                case 2:
+                    Toast.makeText(getContext() , "位置校验无误，请进行人脸识别" , Toast.LENGTH_SHORT).show();
+                    //调用相机进行人脸识别
+                    takephoto();
+                    break;
+                case 3:
+                    Toast.makeText(getContext() , "位置有误，签到失败！" , Toast.LENGTH_SHORT).show();
+                case 4:
+                    loadingForLogin.dismiss();
+                    Toast.makeText(getContext(),"签到成功！" ,Toast.LENGTH_SHORT).show();
                 default:
                     break;
             }
@@ -162,8 +214,13 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
 
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        //将判断签到状态设置好
+        signstatus.put("groupId" , "你是煞笔");
+        signstatus.put("status" , false );
         mcontext = this.getActivity();
         MainActivity mainActivity = (MainActivity)getActivity();
+        headUrl = mainActivity.getHeadUrl();
         userId = mainActivity.getId();
         isAuthentation = mainActivity.getAuthentation();
         realName = mainActivity.getRealName();
@@ -433,6 +490,9 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     private ImageView imageViewCloseDialog;
     private LinearLayout linearLayoutChat;
     private LinearLayout linearLayoutCollect;
+    private LinearLayout linearLayoutSign;
+    private LinearLayout linearLayoutNote;
+
     private Badge badge = null;
 
     protected void showDialog(final Schedule bean){
@@ -449,7 +509,8 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         imageViewCloseDialog=myview.findViewById(R.id.close_dialog);
         linearLayoutChat = myview.findViewById(R.id.course_chat);
         linearLayoutCollect = myview.findViewById(R.id.course_file);
-
+        linearLayoutSign = myview.findViewById(R.id.course_sign);
+        linearLayoutNote = myview.findViewById(R.id.course_note);
 
         textViewforcoursename.setText(bean.getName());
         textViewforncoursezhou.setText("第"+bean.getWeekList().get(0) + " ~ "+bean.getWeekList().get(bean.getWeekList().size() - 1) +"周");
@@ -516,6 +577,31 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                 intent.setDataAndType(uri , "file/*.*");
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 getContext().startActivity(intent);
+            }
+        });
+
+        linearLayoutSign.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(bean.getId().equals(signstatus.getString("groupId")) && signstatus.getBooleanValue("status")){
+                    client = new LocationClient(getContext());
+                    initclient();
+                    client.start();
+                    loadingForLogin = new ProgressDialog(getContext());  //初始化等待动画
+                    loadingForLogin.setCanceledOnTouchOutside(false); //
+                    loadingForLogin.setMessage("正在获取位置....");  //等待动画的标题
+                    loadingForLogin.show();  //显示等待动画
+                }else{
+                    Toast.makeText(getContext() , "签到失败！" , Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        linearLayoutNote.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
 
@@ -903,5 +989,116 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         message.what = 1;
         handler.sendMessage(message);
     }
+
+    //百度地图客户端初始化
+    private void initclient(){
+        LocationClientOption option = new LocationClientOption();
+        option.setScanSpan(5000);
+        option.setLocationMode(LocationClientOption.LocationMode.Device_Sensors);
+        option.setIsNeedAddress(true);
+        client.setLocOption(option);
+    }
+
+    //百度地图得到结果回调
+    public class MyLocationListener implements BDLocationListener {
+        @Override
+        public void onReceiveLocation(final BDLocation location) {
+            now_latitude = Double.valueOf(location.getLatitude());
+            now_longitude = Double.valueOf(location.getLongitude());
+            Log.d(TAG, "onReceiveLocation: "+ now_latitude);
+            Log.d(TAG, "onReceiveLocation: "+ now_longitude);
+            // 不要转圈
+            loadingForLogin.dismiss();
+            // 判断符不符合
+            if((Math.abs((now_latitude - signstatus.getDoubleValue("la")))) < 0.1&&(Math.abs((now_longitude - signstatus.getDoubleValue("lo")))) < 0.1){
+                Message message = new Message();
+                message.what = 2;
+                handler.sendMessage(message);
+            }else{
+                Message message = new Message();
+                message.what = 3;
+                handler.sendMessage(message);
+            }
+
+        }
+    }
+
+    public void takephoto(){
+        //创建File对象，用于存储拍照后的照片
+        File outputImage = new File(getCacheDir(getContext()),
+                "output_image.jpg");
+        try {
+            if (outputImage.exists()){
+                outputImage.delete();
+            }
+            outputImage.createNewFile();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        if (Build.VERSION.SDK_INT >= 24){
+            imageUri = FileProvider.getUriForFile(getContext(),
+                    "com.example.classchat.FileProvider",outputImage);
+        } else {
+            imageUri = Uri.fromFile(outputImage);
+        }
+        //启动相机程序
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
+        startActivityForResult(intent,2);
+    }
+
+    //照相得到结果回调
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        switch (requestCode){
+            case 2:
+                if (resultCode == RESULT_OK){
+                    try {
+                        //将拍摄的照片显示出来
+                        bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().
+                                openInputStream(imageUri));
+                        sign();
+                    }catch (FileNotFoundException e){
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void sign() {
+        loadingForLogin.setMessage("正在进行人脸识别");
+        loadingForLogin.show();
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("api_key","MyoixvqhJTuO4SsirijhOQH6qeHX2Z8N")
+                .addFormDataPart("api_secret", "T6qzPC3JpUWeZhG1PdEaPpSToIMp59qD")
+                .addFormDataPart("image_url1", headUrl)
+                .addFormDataPart("Image_file2", "image1", RequestBody.create(MediaType.parse("image/jpeg"), Util_PictureTool.compressImage(bitmap,"s")))
+                .build();   //构建请求体
+
+        Util_NetUtil.sendOKHTTPRequest("https://api-cn.faceplusplus.com/facepp/v3/compare", requestBody, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String res = response.body().string();
+                JSONObject object = JSON.parseObject(res);
+                double confidence = object.getDoubleValue("confidence");
+                Log.d(TAG, "confidence:"+ confidence);
+                if(confidence >= 95){
+                    Message message = new Message();
+                    message.what = 4;
+                    handler.sendMessage(message);
+                }
+            }
+        });
+    }
+
 
 }

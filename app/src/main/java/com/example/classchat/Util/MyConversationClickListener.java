@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,6 +15,8 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONObject;
+import com.example.classchat.Fragment.Fragment_ClassBox;
 import com.example.classchat.R;
 
 import io.rong.imkit.RongIM;
@@ -22,9 +25,18 @@ import io.rong.imlib.model.Message;
 import io.rong.imlib.model.UserInfo;
 import io.rong.message.FileMessage;
 import io.rong.message.ImageMessage;
+import io.rong.message.LocationMessage;
 
 
 public class MyConversationClickListener implements RongIM.ConversationClickListener {
+    private JSONObject object;
+    private Fragment_ClassBox mcontext;
+
+    public MyConversationClickListener(Fragment fragment){
+        super();
+        mcontext = (Fragment_ClassBox) fragment;
+        object = mcontext.getSignstatus();
+    }
 
     private AlertDialog.Builder builder;
 
@@ -40,7 +52,23 @@ public class MyConversationClickListener implements RongIM.ConversationClickList
 
     @Override
     public boolean onMessageClick(Context context, View view, Message message) {
-        return false;
+        if (message.getContent() instanceof LocationMessage){
+            if((System.currentTimeMillis() - message.getSentTime()) < 1200000 ){
+                Toast.makeText(context , "快去签到吧！" ,Toast.LENGTH_SHORT).show();
+                object.put("groupId" ,message.getTargetId() );
+                object.put("status" , true);
+                object.put("la" , ((LocationMessage) message.getContent()).getLat());
+                object.put("lo" , ((LocationMessage) message.getContent()).getLng());
+            }else{
+                Toast.makeText(context , "小伙计！迟到了呦.." ,Toast.LENGTH_SHORT).show();
+                object.put("groupId" ,message.getTargetId() );
+                object.put("status" , false);
+            }
+            return true;
+        }else{
+            return false;
+        }
+
     }
 
     @Override
@@ -86,8 +114,8 @@ public class MyConversationClickListener implements RongIM.ConversationClickList
             btn_collect.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(!message.getReceivedStatus().isDownload()){
-                        Toast.makeText(context , "请先将文件保存再收藏.." , Toast.LENGTH_SHORT).show();
+                    if(!message.getReceivedStatus().isRead()){
+                        Toast.makeText(context , "将文件保存自动收藏.." , Toast.LENGTH_SHORT).show();
                         popupWindow.dismiss();
                     }else{
                         Toast.makeText(context , "文件已收藏至藏经阁.." , Toast.LENGTH_SHORT).show();
