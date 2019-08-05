@@ -27,11 +27,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <!--使照片完全显示防止按钮遮挡-->
-        <TextView
-            android:text="  "
-            android:padding="@dimen/spacing_small"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        <!--<TextView-->
+            <!--android:text="  "-->
+            <!--android:padding="@dimen/spacing_small"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content" />-->
 
 
     </LinearLayout>

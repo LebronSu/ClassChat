@@ -14,8 +14,9 @@
         <ImageView
             android:id="@+id/iv_good_detail_front_img"
             android:layout_width="match_parent"
-            android:layout_height="350dp"
+            android:layout_height="wrap_content"
             android:scaleType="fitXY"
+            android:adjustViewBounds="true"
             android:visibility="visible" />
 
         <LinearLayout
@@ -28,7 +29,7 @@
             <TextView
                 android:id="@+id/tv_market_goods_detail_item_name"
                 android:textStyle="bold"
-                android:textSize="20sp"
+                android:textSize="30sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="2"
@@ -53,17 +54,12 @@
                     android:id="@+id/tv_market_goods_detail_item_price"
                     android:layout_gravity="center"
                     android:layout_width = "0dip"
-                    android:layout_weight="2"
-                    android:layout_height="wrap_content"
-                    android:textAlignment="center"
-                    android:textSize="25sp"
-                    android:textStyle="bold"
-                    android:textColor="#C08F04"/>
-
-                <TextView
-                    android:layout_width="0dip"
                     android:layout_weight="8"
-                    android:layout_height="match_parent" />
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:textColor="#C08F04"/>
 
                 <com.hch.thumbsuplib.ThumbsUpCountView
                     android:id="@+id/market_goods_detail_item_thumb"
@@ -101,7 +97,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="商品详情"/>
+                android:text="商品详情"
+                android:layout_gravity="center"/>
 
             <TextView
                 android:id="@+id/tv_market_goods_detail_item_detail_info"

@@ -64,8 +64,7 @@
             android:layout_weight="1"
             android:background="@null"
             android:textSize="15sp"
-            android:hint="标题 品类品牌型号都是买家喜欢搜索的"
-            android:textAlignment="center">
+            android:hint="标题 品类品牌型号都是买家喜欢搜索的">
         </EditText>
 
     </LinearLayout>
@@ -96,7 +95,6 @@
             android:textSize="15sp"
             android:id="@+id/et_market_add_intro"
             android:hint="商品功能 成色情况"
-            android:textAlignment="center"
             android:focusable="true"
             android:focusableInTouchMode="true">
         </EditText>

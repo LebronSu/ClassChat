@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.bumptech.glide.Glide;
+import com.example.classchat.Adapter.Adapter_GoodsDetail;
 import com.example.classchat.Object.Object_Commodity;
 import com.example.classchat.Object.Object_Commodity_Shoppingcart;
 import com.example.classchat.R;
@@ -42,9 +43,6 @@ import com.hch.thumbsuplib.ThumbsUpCountView;
 import com.joanzapata.android.BaseAdapterHelper;
 import com.joanzapata.android.QuickAdapter;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -57,13 +55,12 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
     private LinearLayout llOffset;
     private ScrollViewContainer container;
     private  GradationScrollView scrollView;
-    private String itemID, itemName, itemDetailInfo, itemPic1, itemPic2, itemPic3,ownerID;
+    private String itemID, itemName, itemDetailInfo, ownerID;
     private Double itemPrice;
     private Boolean isThumbed;
     private int ThumbsCount;
     private ImageView frontImage;//顶头第一张图
     NoScrollListView nlvImgs;//图片详情
-    private QuickAdapter<String> imgAdapter;
     private List<String> imgsUrl;//商品所有图片URL列表
     private TextView tvGoodTitle, itemname, itemprice, iteminfo, buy, addToShopppingCart;
     private ImageView back, shoppingCart, share;
@@ -143,9 +140,6 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
         itemName = item.getItemName();
         itemPrice = item.getPrice();
         itemDetailInfo = item.getDetailIntroduction();
-        itemPic1 = item.getImageList().get(0);
-        itemPic2 = item.getImageList().get(1);
-        itemPic3 = item.getImageList().get(2);
         ThumbsCount = item.getThumbsUpCount();
 
 //        ownerID = intent.getStringExtra("ownerID");
@@ -400,26 +394,8 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
             }
         });
 
-        //TODO 图片高度有待优化!!不能很好的完全显示
-        width = getScreenWidth(getApplicationContext());
-        imgsUrl = new ArrayList<>();
-        imgsUrl.add(itemPic1);
-        imgsUrl.add(itemPic2);
-        imgsUrl.add(itemPic3);
-        imgAdapter = new QuickAdapter<String>(this,R.layout.adapter_good_detail_imgs) {
-            @Override
-            protected void convert(BaseAdapterHelper helper, String item) {
-                ImageView iv = helper.getView(R.id.iv_adapter_good_detail_img);
-                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) iv.getLayoutParams();
-                params.width = width;
-                params.height = width * 2;
-                iv.setLayoutParams(params);
-                //这个是图片加载出的宽高设置
-                MyImageLoader.getInstance().displayImageCen(getApplicationContext(),item,iv,width,width * 2);
-            }
-        };
-        imgAdapter.addAll(imgsUrl);
-        nlvImgs.setAdapter(imgAdapter);
+        nlvImgs.setAdapter(new Adapter_GoodsDetail(getApplication(), item.getImageList()));
+//        nlvImgs.setAdapter(imgAdapter);
     }
 
     public  int getScreenHeight(Context context) {

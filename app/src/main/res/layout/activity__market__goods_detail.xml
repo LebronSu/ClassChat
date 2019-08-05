@@ -54,8 +54,9 @@
             android:id="@+id/iv_good_detail_shopping_cart"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_toLeftOf="@+id/iv_good_detail_share"
+            android:layout_alignParentRight="true"
             android:paddingLeft="@dimen/spacing_smaller"
+            android:paddingRight="@dimen/spacing_small"
             android:src="@drawable/ic_market_goods_detail_shopping_cart" />
 
         <ImageView
@@ -67,7 +68,8 @@
             android:layout_alignParentRight="true"
             android:paddingLeft="@dimen/spacing_smaller"
             android:paddingRight="@dimen/spacing_small"
-            android:src="@drawable/ic_market_goods_detail_share" />
+            android:src="@drawable/ic_market_goods_detail_share"
+            android:visibility="gone"/>
     </RelativeLayout>
 
     <LinearLayout

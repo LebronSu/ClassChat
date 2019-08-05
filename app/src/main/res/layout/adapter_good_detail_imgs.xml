@@ -6,7 +6,10 @@
 
     <ImageView
         android:id="@+id/iv_adapter_good_detail_img"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+        android:layout_margin="2dp"/>
 
 </LinearLayout>

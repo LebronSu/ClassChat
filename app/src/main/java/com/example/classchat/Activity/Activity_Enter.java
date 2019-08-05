@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -279,5 +280,16 @@ public class Activity_Enter extends AppCompatActivity implements View.OnClickLis
         SharedPreferences sp = getSharedPreferences("userinfo" ,Context.MODE_PRIVATE );
         editPerson.setText(sp.getString("name",""));
         editCode.setText(sp.getString("psw",""));
+    }
+
+    @Override
+    public Resources getResources() {//禁止app字体大小跟随系统字体大小调节
+        Resources resources = super.getResources();
+        if (resources != null && resources.getConfiguration().fontScale != 1.0f) {
+            android.content.res.Configuration configuration = resources.getConfiguration();
+            configuration.fontScale = 1.0f;
+            resources.updateConfiguration(configuration, resources.getDisplayMetrics());
+        }
+        return resources;
     }
 }
