@@ -50,7 +50,6 @@ dependencies {
     // 引入圆形的ImageView
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     //商品详情页所需的依赖
-    implementation 'com.joanzapata.android:base-adapter-helper:1.1.11'
     implementation project(':library')
     implementation project(':IMKit')
     implementation project(':IMLib')

@@ -12,7 +12,6 @@ import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -31,17 +30,13 @@ import com.example.classchat.Object.Object_Commodity;
 import com.example.classchat.Object.Object_Commodity_Shoppingcart;
 import com.example.classchat.R;
 import com.example.classchat.Util.Util_ScreenShot;
-
 import com.github.nisrulz.sensey.Sensey;
 import com.github.nisrulz.sensey.TouchTypeDetector;
 import com.hankkin.library.GradationScrollView;
-import com.hankkin.library.MyImageLoader;
 import com.hankkin.library.NoScrollListView;
 import com.hankkin.library.ScrollViewContainer;
 import com.hankkin.library.StatusBarUtil;
 import com.hch.thumbsuplib.ThumbsUpCountView;
-import com.joanzapata.android.BaseAdapterHelper;
-import com.joanzapata.android.QuickAdapter;
 
 import java.io.File;
 import java.io.IOException;
