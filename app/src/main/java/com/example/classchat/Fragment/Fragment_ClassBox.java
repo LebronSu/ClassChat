@@ -25,6 +25,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.menu.MenuPopupHelper;
 import android.support.v7.widget.PopupMenu;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -64,8 +65,10 @@ import com.example.library_activity_timetable.view.WeekView;
 import com.example.library_cache.Cache;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -146,6 +149,7 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     // 学生专业
     private String proUni;
 
+
     // 头像Url
     private String imageUrl;
 
@@ -198,15 +202,17 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                     break;
                 case 3:
                     Toast.makeText(getContext() , "位置有误，签到失败！" , Toast.LENGTH_SHORT).show();
+                    break;
                 case 5:
                     loadingForLogin.dismiss();
                     Toast.makeText(getContext(),"签到成功！" ,Toast.LENGTH_SHORT).show();
+                    break;
                 case 4:
                     RequestBody requestBody = new FormBody.Builder()
                             .add("groupId", signstatus.getString("groupId"))
                             .add("userId" , userId)
                             .build();
-                    Util_NetUtil.sendOKHTTPRequest("", requestBody, new okhttp3.Callback() {
+                    Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8081/updatesignstatus", requestBody, new okhttp3.Callback() {
                         @Override
                         public void onFailure(@NotNull Call call, @NotNull IOException e) {
 
@@ -222,6 +228,12 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                             }
                         }
                     });
+                    break;
+                case 6:
+                    Toast.makeText(getContext(),"签到失败，请调整照相姿势，重新签到！" ,Toast.LENGTH_SHORT).show();
+                    signstatus.put("status", false);
+                    loadingForLogin.dismiss();
+                    break;
                 default:
                     break;
             }
@@ -607,9 +619,14 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
             public void onClick(View v) {
 
                 if(bean.getId().equals(signstatus.getString("groupId")) && signstatus.getBooleanValue("status")){
-                    client = new LocationClient(getContext());
-                    initclient();
-                    client.start();
+                    try{
+                        client = new LocationClient(getContext());
+                        client.registerLocationListener(new MyLocationListener());
+                        initclient();
+                        client.start();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     loadingForLogin = new ProgressDialog(getContext());  //初始化等待动画
                     loadingForLogin.setCanceledOnTouchOutside(false); //
                     loadingForLogin.setMessage("正在获取位置....");  //等待动画的标题
@@ -903,6 +920,7 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                     proUni = jsonObject.getString("university") + "_" + jsonObject.getString("school");
                     isAuthentation = Boolean.parseBoolean(jsonObject.getString("authentationstatus"));
                     token = jsonObject.getString("token");
+                    headUrl = jsonObject.getString("head");
                     diegod = true;
                     connect(token, new RongIMClient.ConnectCallback() {
                         @Override
@@ -1078,10 +1096,11 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                 if (resultCode == RESULT_OK){
                     try {
                         //将拍摄的照片显示出来
-                        bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().
-                                openInputStream(imageUri));
+                        bitmap = compressBitmapInQuality(imageUri);
                         sign();
                     }catch (FileNotFoundException e){
+                        e.printStackTrace();
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
@@ -1091,21 +1110,57 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         }
     }
 
+    public String bitmapToBase64(Bitmap bitmap) {
+        String result = null;
+        ByteArrayOutputStream baos = null;
+        try {
+            if (bitmap != null) {
+                baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 30, baos);
+
+                baos.flush();
+                baos.close();
+
+                byte[] bitmapBytes = baos.toByteArray();
+                result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (baos != null) {
+                    baos.flush();
+                    baos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+
+
     private void sign() {
         loadingForLogin.setMessage("正在进行人脸识别");
         loadingForLogin.show();
+        Log.d(TAG, "sign: "+ headUrl);
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("api_key","MyoixvqhJTuO4SsirijhOQH6qeHX2Z8N")
                 .addFormDataPart("api_secret", "T6qzPC3JpUWeZhG1PdEaPpSToIMp59qD")
+//                .addFormDataPart("image_base64_1", bitmapToBase64(bitmap))
+//                .addFormDataPart("image_base64_2", bitmapToBase64(bitmap))
                 .addFormDataPart("image_url1", headUrl)
-                .addFormDataPart("Image_file2", "image1", RequestBody.create(MediaType.parse("image/jpeg"), Util_PictureTool.compressImage(bitmap,"s")))
+//                .addFormDataPart("image_url2", "http://farm.rxsy.net/wp-content/uploads/2019/08/Vladimir-Serov-the-faces-2.jpg")
+//                .addFormDataPart("image_file1", "image_file1", RequestBody.create(MediaType.parse("image/jpeg"), Util_PictureTool.compressImage(bitmap, "image_file1")))
+                .addFormDataPart("image_file2", "image_file2", RequestBody.create(MediaType.parse("image/jpeg"), BitmapToFile(bitmap, "image_file2")))
                 .build();   //构建请求体
 
         Util_NetUtil.sendOKHTTPRequest("https://api-cn.faceplusplus.com/facepp/v3/compare", requestBody, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
+                e.printStackTrace();
             }
 
             @Override
@@ -1114,14 +1169,58 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                 JSONObject object = JSON.parseObject(res);
                 double confidence = object.getDoubleValue("confidence");
                 Log.d(TAG, "confidence:"+ confidence);
-                if(confidence >= 95){
+                Log.d(TAG, "onResponse: " + object.getString("image_id1"));
+                Log.d(TAG, "onResponse: " + object.getString("image_id2"));
+                Log.d(TAG, "onResponse: " + object.getJSONArray("faces1"));
+                Log.d(TAG, "onResponse: " + object.getJSONArray("faces2"));
+                Log.d(TAG, "onResponse: " + object.getString("error_message"));
+                if(confidence >= 90){
                     Message message = new Message();
                     message.what = 4;
+                    handler.sendMessage(message);
+                }
+                else {
+                    Message message = new Message();
+                    message.what = 6;
                     handler.sendMessage(message);
                 }
             }
         });
     }
+
+    /**
+     * 单纯的进行质量压缩，不进行尺寸压缩
+     * @param uri 拍照返回的Uri
+     * @return Bitmap 返回bitmap
+     */
+    public Bitmap compressBitmapInQuality(Uri uri) throws IOException {
+        InputStream input = getActivity().getContentResolver().openInputStream(uri);
+        Bitmap bitmap = BitmapFactory.decodeStream(input); // 这里直接把图片从流里取出，不过内存会一下子变大
+        input.close();
+        return bitmap;
+    }
+
+    public static File BitmapToFile(Bitmap bitmap, String name) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+        File file = new File(Environment.getExternalStorageDirectory(), name + ".jpg");
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            try {
+                fos.write(baos.toByteArray());
+                fos.flush();
+                fos.close();
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+
+            e.printStackTrace();
+        }
+        return file;
+    }
+
 
 
 }

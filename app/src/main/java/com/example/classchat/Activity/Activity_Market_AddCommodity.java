@@ -436,7 +436,7 @@ public class Activity_Market_AddCommodity extends AppCompatActivity {
         }
         if (Build.VERSION.SDK_INT >= 24){
             imageUri = FileProvider.getUriForFile(Activity_Market_AddCommodity.this,
-                    "com.example.theclasschat.camera.fileprovider",outputImage);
+                    "com.example.classchat.FileProvider",outputImage);
         } else {
             imageUri = Uri.fromFile(outputImage);
         }

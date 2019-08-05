@@ -52,14 +52,19 @@ public class MyConversationClickListener implements RongIM.ConversationClickList
 
     @Override
     public boolean onMessageClick(Context context, View view, Message message) {
-        if (message.getContent() instanceof LocationMessage){
-            if((System.currentTimeMillis() - message.getSentTime()) < 1200000 ){
+        if (message.getContent() instanceof LocationMessage ){
+            if(((System.currentTimeMillis() - message.getSentTime()) < 1200000) && (!message.getExtra().equals("dsb"))){
                 Toast.makeText(context , "快去签到吧！" ,Toast.LENGTH_SHORT).show();
                 object.put("groupId" ,message.getTargetId() );
                 object.put("status" , true);
                 object.put("la" , ((LocationMessage) message.getContent()).getLat());
                 object.put("lo" , ((LocationMessage) message.getContent()).getLng());
-            }else{
+                message.setReadTime(0000);
+                message.setExtra("dsb");
+            }else if (((System.currentTimeMillis() - message.getSentTime()) < 1200000) && (message.getExtra().equals("dsb"))){
+                Toast.makeText(context , "请勿重复获得位置信息！" ,Toast.LENGTH_SHORT).show();
+            }
+            else{
                 Toast.makeText(context , "小伙计！迟到了呦.." ,Toast.LENGTH_SHORT).show();
                 object.put("groupId" ,message.getTargetId() );
                 object.put("status" , false);
