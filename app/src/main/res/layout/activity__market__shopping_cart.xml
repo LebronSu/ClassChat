@@ -11,18 +11,14 @@
     android:orientation="vertical"
     >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#fff"
-        android:orientation="horizontal"
-        android:padding="10dp">
+    <LinearLayout style="@style/top_nav">
+
 
         <ImageButton
             android:id="@+id/ib_shopcart_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@mipmap/ic_top_bar_lack_ack" />
+            android:background="@drawable/ic_commen_back" />
 
         <TextView
             android:layout_width="0dp"
@@ -30,6 +26,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="购物车"
+            android:textStyle="bold"
             android:textColor="#303235"
             android:textSize="20sp" />
 
@@ -38,6 +35,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="编辑"
+            android:textSize="15sp"
+            android:layout_marginRight="10dp"
             android:textColor="#303235" />
     </LinearLayout>
 
@@ -55,7 +54,7 @@
             android:id="@+id/recyclerview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#eeee" />
+            android:background="#fff" />
 
         <include layout="@layout/empty_cart" />
     </FrameLayout>
@@ -68,7 +67,7 @@
             android:id="@+id/ll_check_all"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#fff"
+            android:background="#EDEDED"
             android:orientation="horizontal"
             android:visibility="visible">
 

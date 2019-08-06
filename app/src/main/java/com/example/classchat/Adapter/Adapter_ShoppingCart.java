@@ -187,10 +187,10 @@ public class Adapter_ShoppingCart extends RecyclerView.Adapter<RecyclerView.View
         ViewHolder(View itemView) {
             //转换
             super(itemView);
-            cbGov = (CheckBox) itemView.findViewById(R.id.cb_gov);
-            ivGov = (ImageView) itemView.findViewById(R.id.iv_gov);
-            tvDescGov = (TextView) itemView.findViewById(R.id.tv_desc_gov);
-            tvPriceGov = (TextView) itemView.findViewById(R.id.tv_price_gov);
+            cbGov = itemView.findViewById(R.id.cb_gov);
+            ivGov = itemView.findViewById(R.id.iv_gov);
+            tvDescGov = itemView.findViewById(R.id.tv_desc_gov);
+            tvPriceGov = itemView.findViewById(R.id.tv_price_gov);
             //设置item的点击事件
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

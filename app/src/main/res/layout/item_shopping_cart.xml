@@ -18,7 +18,7 @@
             android:layout_gravity="center_vertical"
             android:button="@drawable/xml_checkbox_selector"
             android:checked="true"
-            android:padding="10dp"
+            android:padding="5dp"
             android:clickable="false" />
 
         <!--图片-->
@@ -27,7 +27,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:background="@drawable/ic_new_img_loading_1"
-            android:scaleType="fitXY" />
+            android:scaleType="centerCrop" />
 
         <LinearLayout
             android:layout_width="match_parent"

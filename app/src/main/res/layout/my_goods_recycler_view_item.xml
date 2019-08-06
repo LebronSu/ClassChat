@@ -9,7 +9,8 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="center"
-        android:scaleType="fitXY"
+        android:background="@drawable/ic_new_img_loading_1"
+        android:scaleType="centerCrop"
         android:layout_margin="5dp"/>
 
 

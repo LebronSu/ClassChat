@@ -30,6 +30,7 @@ import com.example.classchat.Object.Object_Commodity;
 import com.example.classchat.Object.Object_Commodity_Shoppingcart;
 import com.example.classchat.R;
 import com.example.classchat.Util.Util_ScreenShot;
+import com.example.classchat.Util.Util_ToastUtils;
 import com.github.nisrulz.sensey.Sensey;
 import com.github.nisrulz.sensey.TouchTypeDetector;
 import com.hankkin.library.GradationScrollView;
@@ -56,7 +57,6 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
     private int ThumbsCount;
     private ImageView frontImage;//顶头第一张图
     NoScrollListView nlvImgs;//图片详情
-    private List<String> imgsUrl;//商品所有图片URL列表
     private TextView tvGoodTitle, itemname, itemprice, iteminfo, buy, addToShopppingCart;
     private ImageView back, shoppingCart, share;
     private ThumbsUpCountView thumbs;
@@ -191,9 +191,10 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
                 addToShopppingCart.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(getApplicationContext(), "商品已经加入购物车了哦", Toast.LENGTH_LONG);
+                        Util_ToastUtils.showToast(getApplicationContext(), "商品已经加入购物车了哦");
                     }
                 });
+
             }
         }
 
@@ -204,8 +205,6 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
         llOffset.setLayoutParams(params1);
 
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) frontImage.getLayoutParams();
-        params.height = getScreenHeight(this)*2/3;
-        frontImage.setLayoutParams(params);
 
         container = new ScrollViewContainer(getApplicationContext());
 
@@ -293,7 +292,7 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
                 }
 
                 addToShopppingCart.setText("已加入购物车");
-                
+
 //                List<JSONObject> jsonList = JSON.parseObject(jsonString , new TypeReference<List<JSONObject>>(){});
 //                JSONObject object = new JSONObject();
 //                try {

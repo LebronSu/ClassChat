@@ -24,9 +24,11 @@
             <ImageView
                 android:layout_gravity="center"
                 android:id="@+id/iv_market_item_pic"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="2dp"/>
+                android:background="@drawable/ic_new_img_loading_1"
+                android:scaleType="centerCrop"
+                android:layout_margin="1dp"/>
 
             <TextView
                 android:id="@+id/tv_market_item_name"
