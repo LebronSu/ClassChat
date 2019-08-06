@@ -291,7 +291,7 @@ public class Activity_AccountInfo extends AppCompatActivity {
         }
         if (Build.VERSION.SDK_INT >= 24){
             imageUri = FileProvider.getUriForFile(Activity_AccountInfo.this,
-                    "com.example.theclasschat.camera.fileprovider",outputImage);
+                    "com.example.classchat.FileProvider",outputImage);
         } else {
             imageUri = Uri.fromFile(outputImage);
         }

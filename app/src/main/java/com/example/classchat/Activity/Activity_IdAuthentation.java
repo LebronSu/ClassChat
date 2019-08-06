@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
@@ -43,8 +44,10 @@ import com.example.classchat.Util.Util_PictureTool;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -267,11 +270,11 @@ public class Activity_IdAuthentation extends AppCompatActivity {
                             .setType(MultipartBody.FORM)
                             .addFormDataPart("userId", userId_)
                             .addFormDataPart("studentId", studentId_)
-                            .addFormDataPart("university", university_)
-                            .addFormDataPart("school", school_)
+                            .addFormDataPart("university", school_)
+                            .addFormDataPart("school", university_)
                             .addFormDataPart("realname", realName_)
-                            .addFormDataPart("headico", "image1", RequestBody.create(MediaType.parse("image/jpeg"), Util_PictureTool.compressImage(firstBitmap, "real_head")))
-                            .addFormDataPart("card", "image2", RequestBody.create(MediaType.parse("image/jpeg"), Util_PictureTool.compressImage(secondBitmap, "real_card")))
+                            .addFormDataPart("headico", "image1", RequestBody.create(MediaType.parse("image/jpeg"), BitmapToFile(firstBitmap, "real_head")))
+                            .addFormDataPart("card", "image2", RequestBody.create(MediaType.parse("image/jpeg"), BitmapToFile(secondBitmap, "real_card")))
                             .build();
 
                     Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8081/authentation", requestBody, new Callback() {
@@ -343,7 +346,7 @@ public class Activity_IdAuthentation extends AppCompatActivity {
             case CHOOSE_PICTURE_HEAD:
                 if (resultCode == RESULT_OK){
                     try {
-                        firstBitmap = getBitmapFormUri(data.getData());
+                        firstBitmap = compressBitmapInQuality(data.getData());
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
@@ -356,7 +359,7 @@ public class Activity_IdAuthentation extends AppCompatActivity {
             case CHOOSE_PICTURE_CARD:
                 if (resultCode == RESULT_OK){
                     try {
-                        secondBitmap = getBitmapFormUri(data.getData());
+                        secondBitmap = compressBitmapInQuality(data.getData());
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
@@ -369,7 +372,7 @@ public class Activity_IdAuthentation extends AppCompatActivity {
             case TAKE_PHOTO_HEAD:
                 if (resultCode == RESULT_OK){
                     try {
-                        firstBitmap = getBitmapFormUri(imageUri);
+                        firstBitmap = compressBitmapInQuality(imageUri);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
@@ -382,7 +385,7 @@ public class Activity_IdAuthentation extends AppCompatActivity {
             case TAKE_PHOTO_CARD:
                 if (resultCode == RESULT_OK){
                     try {
-                        secondBitmap = getBitmapFormUri(imageUri);
+                        secondBitmap = compressBitmapInQuality(imageUri);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
@@ -423,44 +426,6 @@ public class Activity_IdAuthentation extends AppCompatActivity {
             startActivityForResult(intent, TAKE_PHOTO_CARD);
     }
 
-    public Bitmap getBitmapFormUri(Uri uri) throws FileNotFoundException, IOException {
-        InputStream input = getContentResolver().openInputStream(uri);
-
-        //这一段代码是不加载文件到内存中也得到bitmap的真是宽高，主要是设置inJustDecodeBounds为true
-        BitmapFactory.Options onlyBoundsOptions = new BitmapFactory.Options();
-        onlyBoundsOptions.inJustDecodeBounds = true;//不加载到内存
-        onlyBoundsOptions.inDither = true;//optional
-        onlyBoundsOptions.inPreferredConfig = Bitmap.Config.RGB_565;//optional
-        BitmapFactory.decodeStream(input, null, onlyBoundsOptions);
-        input.close();
-        int originalWidth = onlyBoundsOptions.outWidth;
-        int originalHeight = onlyBoundsOptions.outHeight;
-        if ((originalWidth == -1) || (originalHeight == -1))
-            return null;
-
-        //图片分辨率以480x800为标准
-        float hh = 720f;//这里设置高度为800f
-        float ww = 1280f;//这里设置宽度为480f
-        //缩放比，由于是固定比例缩放，只用高或者宽其中一个数据进行计算即可
-        int be = 1;//be=1表示不缩放
-        if (originalWidth > originalHeight && originalWidth > ww) {//如果宽度大的话根据宽度固定大小缩放
-            be = (int) (originalWidth / ww);
-        } else if (originalWidth < originalHeight && originalHeight > hh) {//如果高度高的话根据宽度固定大小缩放
-            be = (int) (originalHeight / hh);
-        }
-        if (be <= 0)
-            be = 1;
-        //比例压缩
-        BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
-        bitmapOptions.inSampleSize = be;//设置缩放比例
-        bitmapOptions.inDither = true;
-        bitmapOptions.inPreferredConfig = Bitmap.Config.RGB_565;
-        input = getContentResolver().openInputStream(uri);
-        Bitmap bitmap = BitmapFactory.decodeStream(input, null, bitmapOptions);
-        input.close();
-
-        return Util_PictureTool.compressImage(bitmap);//再进行质量压缩
-    }
 
     //请求权限后回调的方法
     //参数： requestCode  是我们自己定义的权限请求码
@@ -479,6 +444,39 @@ public class Activity_IdAuthentation extends AppCompatActivity {
                 Toast.makeText(this, "获得照相权限失败！", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    /**
+     * 单纯的进行质量压缩，不进行尺寸压缩
+     * @param uri 拍照返回的Uri
+     * @return Bitmap 返回bitmap
+     */
+    public Bitmap compressBitmapInQuality(Uri uri) throws IOException {
+        InputStream input = getContentResolver().openInputStream(uri);
+        Bitmap bitmap = BitmapFactory.decodeStream(input); // 这里直接把图片从流里取出，不过内存会一下子变大
+        input.close();
+        return bitmap;
+    }
+
+    public static File BitmapToFile(Bitmap bitmap, String name) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+        File file = new File(Environment.getExternalStorageDirectory(), name + ".jpg");
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            try {
+                fos.write(baos.toByteArray());
+                fos.flush();
+                fos.close();
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+
+            e.printStackTrace();
+        }
+        return file;
     }
 
 }
