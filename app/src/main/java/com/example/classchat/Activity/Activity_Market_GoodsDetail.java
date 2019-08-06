@@ -30,7 +30,6 @@ import com.example.classchat.Object.Object_Commodity;
 import com.example.classchat.Object.Object_Commodity_Shoppingcart;
 import com.example.classchat.R;
 import com.example.classchat.Util.Util_ScreenShot;
-import com.example.classchat.Util.Util_ToastUtils;
 import com.github.nisrulz.sensey.Sensey;
 import com.github.nisrulz.sensey.TouchTypeDetector;
 import com.hankkin.library.GradationScrollView;
@@ -191,10 +190,9 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
                 addToShopppingCart.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Util_ToastUtils.showToast(getApplicationContext(), "商品已经加入购物车了哦");
+                        Toast.makeText(getApplicationContext(), "商品已经加入购物车了哦", Toast.LENGTH_LONG);
                     }
                 });
-
             }
         }
 
@@ -203,8 +201,6 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
         LinearLayout.LayoutParams params1 = (LinearLayout.LayoutParams) llOffset.getLayoutParams();
         params1.setMargins(0,-StatusBarUtil.getStatusBarHeight(this)/4,0,0);
         llOffset.setLayoutParams(params1);
-
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) frontImage.getLayoutParams();
 
         container = new ScrollViewContainer(getApplicationContext());
 
