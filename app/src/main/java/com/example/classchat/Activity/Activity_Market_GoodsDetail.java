@@ -12,7 +12,6 @@ import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -26,11 +25,13 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.bumptech.glide.Glide;
+import com.example.classchat.Adapter.Adapter_ShoppingCart;
 import com.example.classchat.Object.Object_Commodity;
 import com.example.classchat.Object.Object_Commodity_Shoppingcart;
 import com.example.classchat.R;
 import com.example.classchat.Util.Util_ScreenShot;
 
+import com.example.classchat.Util.Util_ToastUtils;
 import com.github.nisrulz.sensey.Sensey;
 import com.github.nisrulz.sensey.TouchTypeDetector;
 import com.hankkin.library.GradationScrollView;
@@ -41,9 +42,6 @@ import com.hankkin.library.StatusBarUtil;
 import com.hch.thumbsuplib.ThumbsUpCountView;
 import com.joanzapata.android.BaseAdapterHelper;
 import com.joanzapata.android.QuickAdapter;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,11 +63,11 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
     NoScrollListView nlvImgs;//图片详情
     private QuickAdapter<String> imgAdapter;
     private List<String> imgsUrl;//商品所有图片URL列表
-    private TextView tvGoodTitle, itemname, itemprice, iteminfo, buy, addToShopppingCart;
+    private TextView tvGoodTitle, itemname, itemprice, iteminfo, buy, addToShoppingCart;
     private ImageView back, shoppingCart, share;
     private ThumbsUpCountView thumbs;
     private Object_Commodity item;
-
+    private boolean isAdded ;
     private int height;
     private int width;
 
@@ -186,10 +184,11 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
                 object_commodity_shoppingcart.setPrice(object_commodity.getPrice());
                 datas.add(object_commodity_shoppingcart);
             }
+
             /**
              * 判断是否已添加
              */
-            boolean isAdded = false;
+            isAdded = false;
             if (datas != null) {
                 for (int i = 0; i < datas.size(); i++) {
                     if ((item.getItemID()).equals(datas.get(i).getItemID())) {
@@ -197,14 +196,11 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
                     }
                 }
             }
+
             if (isAdded == true) {
-                addToShopppingCart.setText("已加入购物车");
-                addToShopppingCart.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(getApplicationContext(), "商品已经加入购物车了哦", Toast.LENGTH_LONG);
-                    }
-                });
+                addToShoppingCart.setText("移出购物车");
+            }else{
+                addToShoppingCart.setText("添加购物车");
             }
         }
 
@@ -250,10 +246,10 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
             }
         });
 
-        addToShopppingCart.setOnClickListener(new View.OnClickListener() {
+
+        addToShoppingCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 /**
                  * 将商品加入购物车
                  */
@@ -262,75 +258,40 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
                 SharedPreferences.Editor editor = sp.edit();
                 System.out.println("这里是jsonstring： "+jsonString);
 
-                List<Object_Commodity_Shoppingcart> datas = new ArrayList<>();
-
                 if(!jsonString.equals("error") && !jsonString.equals("[{}]")){
                     List<Object_Commodity> commodityList = JSON.parseObject(jsonString , new TypeReference<List<Object_Commodity>>(){});
-                    // 把缓存里的对象取出
-                    for(Object_Commodity object_commodity: commodityList) {
-                        Object_Commodity_Shoppingcart object_commodity_shoppingcart = new Object_Commodity_Shoppingcart();
-                        object_commodity_shoppingcart.setImageList(object_commodity.getImageList());
-                        object_commodity_shoppingcart.setItemID(object_commodity.getItemID());
-                        object_commodity_shoppingcart.setItemName(object_commodity.getItemName());
-                        object_commodity_shoppingcart.setOwnerID(object_commodity.getOwnerID());
-                        object_commodity_shoppingcart.setPrice(object_commodity.getPrice());
-                        datas.add(object_commodity_shoppingcart);
-                    }
 
-                    /**
-                     * 判断是否已添加
-                     */
-                    boolean isAdded = false ;
-                    if(datas != null){
-                        for(int i = 0 ; i<datas.size() ; i++){
-                            if((item.getItemID()).equals(datas.get(i).getItemID())){
-                                isAdded = true;
+                    if(isAdded == true) {
+                        for(int k = 0 ; k < commodityList.size() ; k++){
+                            if(item.getItemID().equals(commodityList.get(k).getItemID())){
+                                commodityList.remove(k);
+                                System.out.println(k);
+                                break;
                             }
                         }
-                    }else{
-                        commodityList.add(item);
+                        editor.clear().commit();
                         editor.putString("cart_information", JSON.toJSONString(commodityList)).commit();
-                    }
-
-                    if(isAdded == false){
+                        Util_ToastUtils.showToast(getApplicationContext(),"已移出购物车");
+                        isAdded = false;
+                        addToShoppingCart.setText("添加购物车");
+                    }else {
                         commodityList.add(item);
+                        editor.clear().commit();
                         editor.putString("cart_information", JSON.toJSONString(commodityList)).commit();
+                        Util_ToastUtils.showToast(getApplicationContext(),"已加入购物车");
+                        isAdded = true;
+                        addToShoppingCart.setText("移出购物车");
                     }
                 }else{
                     editor.clear().commit();
                     List<Object_Commodity> list = new ArrayList<>();
                     list.add(item);
                     editor.putString("cart_information",JSON.toJSONString(list)).commit();
+                    Util_ToastUtils.showToast(getApplicationContext(),"已加入购物车");
+                    isAdded = true;
+                    addToShoppingCart.setText("移出购物车");
                 }
 
-                addToShopppingCart.setText("已加入购物车");
-                
-//                List<JSONObject> jsonList = JSON.parseObject(jsonString , new TypeReference<List<JSONObject>>(){});
-//                JSONObject object = new JSONObject();
-//                try {
-//                    object.put("ownerId" , item.getOwnerID());
-//                    object.put("itemId" , item.getItemID());
-//                    object.put("itemName"  , item.getItemName());
-//                    object.put("price" , item.getPrice());
-//                    object.put("url" , item.getImageList().get(0));
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                System.out.println("这里是object的长度在atc按钮里："+ object.length());
-//
-//                jsonList.add(object);
-//                String str = JSON.toJSONString(jsonList);
-//                System.out.println(str);
-//                editor.putString("cart_information" , JSON.toJSONString(jsonList)).commit();
-//                editor.apply();
-
-//                System.out.println("这里是jsonlist的size在atc按钮里：" +jsonList.size());
-//                Log.e("已加入购物车·", "add successfully");
-//
-//                String information = sp.getString("cart_information" ,"error");
-//                System.out.println(information);
-//                System.out.println(jsonList.get(0));
             }
         });
 
@@ -369,7 +330,7 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
         back = findViewById(R.id.iv_goods_detail_back);
         shoppingCart = findViewById(R.id.iv_good_detail_shopping_cart);
         share = findViewById(R.id.iv_good_detail_share);
-        addToShopppingCart = findViewById(R.id.tv_good_detail_add_shop_cart);
+        addToShoppingCart = findViewById(R.id.tv_good_detail_add_shop_cart);
         buy = findViewById(R.id.tv_good_detail_buy);
         itemname = findViewById(R.id.tv_market_goods_detail_item_name);
         itemprice = findViewById(R.id.tv_market_goods_detail_item_price);
@@ -571,9 +532,9 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
 //                            }catch (Exception e){
 //                                e.printStackTrace();
 //                            }
-                            Message message = new Message();
-                            message.what = RECEIVE_SUCCESS;
-                            handler.sendMessage(message);
+        Message message = new Message();
+        message.what = RECEIVE_SUCCESS;
+        handler.sendMessage(message);
 //                        }
 //                    });
 //                }catch (Exception e){
@@ -604,6 +565,7 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
         Sensey.getInstance().setupDispatchTouchEvent(event);
         return super.dispatchTouchEvent(event);
     }
+
 }
 
 
