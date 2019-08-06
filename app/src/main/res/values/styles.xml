@@ -3,13 +3,13 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@android:color/holo_blue_light</item>
-        <item name="colorPrimaryDark">@android:color/holo_blue_light</item>
-        <item name="colorAccent">@android:color/holo_blue_light</item>
+        <!--<item name="colorPrimary">@android:color/holo_blue_light</item>-->
+        <!--<item name="colorPrimaryDark">@android:color/holo_blue_light</item>-->
+        <!--<item name="colorAccent">@android:color/holo_blue_light</item>-->
     </style>
     <!-- 顶部导航的风格 -->
     <style name="top_nav">
-        <item name="android:background">#EDEDED</item>
+        <item name="android:background">@color/theme</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">44dp</item>
         <item name="android:gravity">center</item>
@@ -58,4 +58,13 @@
         <item name="android:textSize">@dimen/font_normal</item>
         <item name="android:textColor">@color/white</item>
     </style>
+
+    <declare-styleable name="TimingButton">
+        <!--结束后的文字-->
+        <attr name="tb_psText" format="string" />
+        <!--计时总时长，毫秒-->
+        <attr name="tb_totalTime" format="integer" />
+        <!--计时时间间隔，毫秒-->
+        <attr name="tb_timeInterval" format="integer" />
+    </declare-styleable>
 </resources>

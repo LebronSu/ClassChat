@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,6 +21,8 @@ import android.view.ViewGroup;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,6 +31,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.bumptech.glide.Glide;
+import com.example.classchat.Activity.Activity_AboutUs;
 import com.example.classchat.Activity.Activity_AccountInfo;
 import com.example.classchat.Activity.Activity_HelpAndFeedback;
 import com.example.classchat.Activity.Activity_IdAuthentation;
@@ -90,6 +95,7 @@ public class Fragment_SelfInformationCenter extends Fragment {
         }
     };
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
@@ -150,7 +156,7 @@ public class Fragment_SelfInformationCenter extends Fragment {
         linearLayoutforGuanyu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(),MainActivity.class);
+                Intent intent = new Intent(getActivity(), Activity_AboutUs.class);
                 startActivity(intent);
             }
         });

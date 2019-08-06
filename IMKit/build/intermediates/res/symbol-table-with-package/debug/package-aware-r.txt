@@ -44,7 +44,6 @@ attr layout_insetEdge
 attr layout_keyline
 attr statusBarBackground
 attr ttcIndex
-bool abc_action_bar_embed_tabs
 bool rc_enable_automatic_download_voice_msg
 bool rc_enable_mentioned_message
 bool rc_enable_message_recall
@@ -694,7 +693,6 @@ id ext_main_bar
 id follow
 id forever
 id func
-id glide_custom_view_target_tag
 id gridlist
 id icon
 id icon_group

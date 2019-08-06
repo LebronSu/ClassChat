@@ -3,15 +3,19 @@ package com.example.classchat.Activity;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.classchat.R;
@@ -30,7 +34,7 @@ import okhttp3.Response;
 public class Activity_Modify extends AppCompatActivity {
     // 控件成员
     private ImageView ivReturn;
-    private Button btnUpload;
+    private TextView btnUpload;
     private EditText etName;
 
     // 标识常量
@@ -69,6 +73,15 @@ public class Activity_Modify extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity__modify);
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            Window window = getWindow();
+            //After LOLLIPOP not translucent status bar
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            //Then call setStatusBarColor.
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getResources().getColor(R.color.theme));
+        }
 
 //        // 去除ActionBar
 //        ActionBar actionBar = getSupportActionBar();

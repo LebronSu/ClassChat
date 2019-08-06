@@ -2,6 +2,7 @@ package com.example.classchat.Activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -10,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -17,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.classchat.R;
+import com.example.classchat.Util.TimingButton;
 import com.example.classchat.Util.Util_NetUtil;
 
 import java.io.IOException;
@@ -30,7 +34,8 @@ import okhttp3.Response;
 
 public class Activity_Register extends AppCompatActivity implements View.OnClickListener {
     private EditText editTextP, editSMS, editTextCT;
-    private Button button, SMSBtn;
+    private Button button;
+    private TimingButton SMSBtn;
     private TextView enterText;
     private ImageView returnImage;
     //在主线程里接收到信息并报错
@@ -137,6 +142,14 @@ public class Activity_Register extends AppCompatActivity implements View.OnClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity__register);
+        if (Build.VERSION.SDK_INT >= 21) {
+            Window window = getWindow();
+            //After LOLLIPOP not translucent status bar
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            //Then call setStatusBarColor.
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getResources().getColor(R.color.theme));
+        }
         init();
         SMSSDK.registerEventHandler(eventHandler);
     }
@@ -155,7 +168,7 @@ public class Activity_Register extends AppCompatActivity implements View.OnClick
         enterText.setOnClickListener(this);
         returnImage = (ImageView) findViewById(R.id.iv_return);
         returnImage.setOnClickListener(this);
-        SMSBtn = (Button) findViewById(R.id.bn_sms_code);
+        SMSBtn = findViewById(R.id.bn_sms_code);
         SMSBtn.setOnClickListener(this);
     }
 
@@ -177,11 +190,12 @@ public class Activity_Register extends AppCompatActivity implements View.OnClick
                 break;
             case R.id.bn_sms_code:
                 final String username = editTextP.getText().toString().trim();
-                if (TextUtils.isEmpty(username)){
 
+                if (TextUtils.isEmpty(username)){
+                    Toast.makeText(this, "手机号不能为空！", Toast.LENGTH_SHORT).show();
                     editTextP.requestFocus();
                 }else {
-
+                    SMSBtn.start();
                     SMSSDK.getVerificationCode("86", editTextP.getText().toString());
                 }
                 break;

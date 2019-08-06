@@ -41,13 +41,16 @@
                 android:layout_marginTop="@dimen/spacing_tinyer">
 
 
-                <ImageView
+                <TextView
                     android:layout_width="0dip"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:paddingLeft="2dp"
+                    android:textSize="15sp"
+                    android:text="LKB"
+                    android:textStyle="bold"
                     android:layout_gravity="start|center"
-                    android:background="@drawable/ic_market_item_price"/>
+                    />
 
                 <TextView
                     android:id="@+id/tv_market_goods_detail_item_price"
@@ -57,8 +60,7 @@
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
                     android:textSize="25sp"
-                    android:textStyle="bold"
-                    android:textColor="#C08F04"/>
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="0dip"

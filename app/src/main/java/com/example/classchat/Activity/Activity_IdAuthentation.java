@@ -27,6 +27,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -70,7 +72,7 @@ public class Activity_IdAuthentation extends AppCompatActivity {
     private ImageView face;
     private ImageView card;
     private Button confirm;
-    private Button back;
+    private ImageView back;
     private Context mContext;
 
     private static final String TAG = "Activity_IdAuthentation";
@@ -148,6 +150,15 @@ public class Activity_IdAuthentation extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity__id_authentation);
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            Window window = getWindow();
+            //After LOLLIPOP not translucent status bar
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            //Then call setStatusBarColor.
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getResources().getColor(R.color.theme));
+        }
 
         // 从MainActivity获得学生ID
         Intent intent = getIntent();

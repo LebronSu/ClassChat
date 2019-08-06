@@ -21,6 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.7"
             android:gravity="center"
+            android:textColor="#fff"
             android:text="登录"
             android:textSize="16sp" />
 
@@ -32,7 +33,7 @@
             android:padding="8dp"
             android:text="注册"
             android:gravity="center"
-            android:textColor="#404040"
+            android:textColor="#fff"
             android:textSize="14sp" />
     </LinearLayout>
 

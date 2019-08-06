@@ -17,7 +17,7 @@
     <!-- 設置描邊 -->
     <stroke
         android:width="1px"
-        android:color="#07a6e6" />
+        android:color="@color/theme" />
 
     <!-- padding：Button里面的文字与Button边界的间隔 -->
     <padding

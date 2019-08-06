@@ -1,5 +1,7 @@
 package com.example.classchat.Activity;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,8 +10,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,7 +26,10 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -32,6 +41,7 @@ import com.example.classchat.Fragment.Fragment_Forum;
 import com.example.classchat.Fragment.Fragment_SelfInformationCenter;
 import com.example.classchat.Fragment.Fragment_Market;
 import com.example.classchat.R;
+import com.example.classchat.Util.ChangeStatusBarColor;
 import com.example.classchat.Util.MyConversationClickListener;
 import com.example.classchat.Util.Util_NetUtil;
 import com.github.nisrulz.sensey.Sensey;
@@ -49,9 +59,12 @@ import java.util.Locale;
 import io.rong.imkit.RongIM;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Message;
+import io.rong.message.LocationMessage;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
@@ -76,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
     private FragmentManager manager = getSupportFragmentManager();
     private long firstTime;// 记录点击返回时第一次的时间毫秒值
 
-
+    private String sendGroupId;
 
     List<Fragment> mFragments;
     AlertDialog builder=null;
@@ -92,6 +105,43 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
+
+    /*
+    设置handler接收网络线程的信号并处理
+     */
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler(){
+        public void handleMessage(final android.os.Message msg){
+            switch (msg.what){
+                case 1:
+                    Fragment_ClassBox fragment = (Fragment_ClassBox) mFragments.get(0);
+                    String tablename = fragment.getProUni();
+                    RequestBody requestBody = new FormBody.Builder()
+                            .add("time", String.valueOf(System.currentTimeMillis()))
+                            .add("groupId", sendGroupId)
+                            .add("tablename", tablename)
+                            .build();
+                    Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8081/course/setsigntime", requestBody, new okhttp3.Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+                        }
+
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                                android.os.Message message = new android.os.Message();
+                                message.what = 2;
+                                handler.sendMessage(message);
+                        }
+                    });
+                    break;
+                default:
+                case 2:
+                    Toast.makeText(MainActivity.this, "老师您好， 您的签到信息已经成功发出", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
 
 
     private void exitApp(long timeInterval) {
@@ -127,6 +177,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // 设置沉浸式状态栏
+        if (Build.VERSION.SDK_INT >= 21) {
+            Window window = getWindow();
+            //After LOLLIPOP not translucent status bar
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            //Then call setStatusBarColor.
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getResources().getColor(R.color.theme));
+        }
         Intent intent = getIntent();
         Log.d(TAG, "onCreate: "+ sHA1(MainActivity.this));
         correctId = intent.getStringExtra("userId");
@@ -156,13 +215,29 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        RongIM.getInstance().setSendMessageListener(new RongIM.OnSendMessageListener() {
+            @Override
+            public Message onSend(Message message) {
+                if (message.getContent() instanceof LocationMessage) {
+                    sendGroupId = message.getTargetId();
+                    android.os.Message message1 = new android.os.Message();
+                    message1.what = 1;
+                    handler.sendMessage(message1);
+                    return message;
+                }
+                return message;
+            }
+
+            @Override
+            public boolean onSent(Message message, RongIM.SentMessageErrorCode sentMessageErrorCode) {
+                return false;
+            }
+        });
+
         RongIM.setConversationClickListener(new MyConversationClickListener(mFragments.get(0)));
 
         //防止在商城搜索时导航栏上移到键盘上方
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-
-
-
 
     }
 
@@ -190,14 +265,47 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.menu_classtable:
                         setFragmentPosition(0);
+                        // 设置沉浸式状态栏
+                        if (Build.VERSION.SDK_INT >= 21) {
+                            Window window = getWindow();
+                            //After LOLLIPOP not translucent status bar
+                            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                            //Then call setStatusBarColor.
+                            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                            window.setStatusBarColor(getResources().getColor(R.color.theme));
+                        }
                         break;
                     case R.id.menu_forum:
+                        if (Build.VERSION.SDK_INT >= 21) {
+                            Window window = getWindow();
+                            //After LOLLIPOP not translucent status bar
+                            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                            //Then call setStatusBarColor.
+                            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                            window.setStatusBarColor(getResources().getColor(R.color.forum_gray));
+                        }
                         setFragmentPosition(1);
                         break;
                     case R.id.menu_market:
+                        if (Build.VERSION.SDK_INT >= 21) {
+                            Window window = getWindow();
+                            //After LOLLIPOP not translucent status bar
+                            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                            //Then call setStatusBarColor.
+                            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                            window.setStatusBarColor(getResources().getColor(R.color.theme));
+                        }
                         setFragmentPosition(2);
                         break;
                     case R.id.menu_home:
+                        if (Build.VERSION.SDK_INT >= 21) {
+                            Window window = getWindow();
+                            //After LOLLIPOP not translucent status bar
+                            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                            //Then call setStatusBarColor.
+                            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                            window.setStatusBarColor(getResources().getColor(R.color.theme));
+                        }
                         setFragmentPosition(3);
                         break;
                     default:

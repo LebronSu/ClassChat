@@ -14,14 +14,16 @@
     <!--android:background="@color/write"-->
     <!--app:titleTextColor="@color/black_2c" />-->
 
+
     <FrameLayout
         android:id="@+id/ll_frameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bv_bottomNavigation">
-
     </FrameLayout>
     <!--android:layout_below="@id/toolbar" />-->
+
+
 
 
     <android.support.design.widget.BottomNavigationView

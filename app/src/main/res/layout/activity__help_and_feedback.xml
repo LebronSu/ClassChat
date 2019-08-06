@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.7"
             android:gravity="center"
+            android:textColor="#fff"
             android:text="帮助与反馈"
             android:textSize="16sp" />
 
@@ -72,7 +73,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textColor="#07a6e6"
+            android:textColor="@color/theme"
             android:background="@drawable/bg_radius_register_btn"
             android:text="提交"/>
 

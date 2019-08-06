@@ -32,6 +32,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -88,6 +90,7 @@ import io.rong.imkit.RongIM;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.UserInfo;
+import io.rong.message.LocationMessage;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -122,14 +125,10 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     private double now_longitude;
     private double now_latitude;
 
-    //用来记录签到状态的JSON 包括 课程id 是否能签到 经纬度
     public JSONObject signstatus = new JSONObject();
     public JSONObject getSignstatus() {
         return signstatus;
     }
-
-
-
 
 
     //控件
@@ -149,6 +148,9 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     // 学生专业
     private String proUni;
 
+    public String getProUni() {
+        return proUni;
+    }
 
     // 头像Url
     private String imageUrl;
@@ -189,7 +191,7 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     设置handler接收网络线程的信号并处理
      */
     @SuppressLint("HandlerLeak")
-    private Handler handler = new Handler(){
+    public Handler handler = new Handler(){
         public void handleMessage(Message msg){
             switch (msg.what){
                 case 1:
@@ -211,8 +213,9 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                     RequestBody requestBody = new FormBody.Builder()
                             .add("groupId", signstatus.getString("groupId"))
                             .add("userId" , userId)
+                            .add("tablename", proUni)
                             .build();
-                    Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8081/updatesignstatus", requestBody, new okhttp3.Callback() {
+                    Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8081/course/updatesignstatus", requestBody, new okhttp3.Callback() {
                         @Override
                         public void onFailure(@NotNull Call call, @NotNull IOException e) {
 
@@ -220,19 +223,31 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
 
                         @Override
                         public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                            Boolean responseData = Boolean.valueOf(response.body().string());
-                            if (responseData) {
-                                Message message = new Message();
-                                message.what = 5;
-                                handler.sendMessage(message);
-                            }
+
+
+                            Message message = new Message();
+                            message.what = 5;
+                            handler.sendMessage(message);
+
                         }
                     });
                     break;
                 case 6:
                     Toast.makeText(getContext(),"签到失败，请调整照相姿势，重新签到！" ,Toast.LENGTH_SHORT).show();
-                    signstatus.put("status", false);
                     loadingForLogin.dismiss();
+                    break;
+                case 7:
+                    client = new LocationClient(getContext());
+                    client.registerLocationListener(new MyLocationListener());
+                    initclient();
+                    client.start();
+                    loadingForLogin = new ProgressDialog(getContext());  //初始化等待动画
+                    loadingForLogin.setCanceledOnTouchOutside(false); //
+                    loadingForLogin.setMessage("正在获取位置....");  //等待动画的标题
+                    loadingForLogin.show();  //显示等待动画
+                    break;
+                case 8:
+                    Toast.makeText(getContext(),"签到失败" ,Toast.LENGTH_SHORT).show();
                     break;
                 default:
                     break;
@@ -250,8 +265,6 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         super.onActivityCreated(savedInstanceState);
 
         //将判断签到状态设置好
-        signstatus.put("groupId" , "你是煞笔");
-        signstatus.put("status" , false );
         mcontext = this.getActivity();
         MainActivity mainActivity = (MainActivity)getActivity();
         headUrl = mainActivity.getHeadUrl();
@@ -617,23 +630,32 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         linearLayoutSign.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                RequestBody requestBody = new FormBody.Builder()
+                        .add("time", String.valueOf(System.currentTimeMillis()))
+                        .add("groupId", bean.getId())
+                        .add("userId", userId)
+                        .add("tablename", proUni)
+                        .build();
 
-                if(bean.getId().equals(signstatus.getString("groupId")) && signstatus.getBooleanValue("status")){
-                    try{
-                        client = new LocationClient(getContext());
-                        client.registerLocationListener(new MyLocationListener());
-                        initclient();
-                        client.start();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8081/course/issignable", requestBody, new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
                     }
-                    loadingForLogin = new ProgressDialog(getContext());  //初始化等待动画
-                    loadingForLogin.setCanceledOnTouchOutside(false); //
-                    loadingForLogin.setMessage("正在获取位置....");  //等待动画的标题
-                    loadingForLogin.show();  //显示等待动画
-                }else{
-                    Toast.makeText(getContext() , "签到失败！" , Toast.LENGTH_SHORT).show();
-                }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        if (Boolean.valueOf(response.body().string())) {
+                            android.os.Message message1 = new android.os.Message();
+                            message1.what = 7;
+                            handler.sendMessage(message1);
+                        }else {
+                            android.os.Message message1 = new android.os.Message();
+                            message1.what = 8;
+                            handler.sendMessage(message1);
+                        }
+                    }
+                });
             }
         });
 
@@ -859,7 +881,7 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                         Log.d("LoginActivity", "--onSuccess");
 
                         // 登陆成功
-                        Toast.makeText(context, "可以使用聊天", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context, "可以使用聊天", Toast.LENGTH_SHORT).show();
 
                         RongIM.getInstance().setCurrentUserInfo(new UserInfo(userId, realName, Uri.parse(imageUrl)));
                         RongIM.getInstance().setMessageAttachedUserInfo(true);
@@ -934,7 +956,7 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                             Log.d("LoginActivity", "--onSuccess");
 
                             // 登陆成功
-                            Toast.makeText(getActivity(), "可以使用聊天", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(getActivity(), "可以使用聊天", Toast.LENGTH_SHORT).show();
 
                         }
 

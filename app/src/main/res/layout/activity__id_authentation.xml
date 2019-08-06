@@ -15,7 +15,7 @@
         android:baselineAligned="false"
         android:orientation="horizontal">
 
-        <Button
+        <ImageView
             android:id="@+id/back_from_authentation_button"
             android:layout_width="30dp"
             android:layout_height="30dp"
@@ -30,8 +30,7 @@
             android:gravity="center"
             android:text="实名认证"
             android:textColor="#FFFFFF"
-            android:textStyle="bold"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
 
         <View
             android:layout_width="30dp"
@@ -55,13 +54,13 @@
                 android:layout_height="match_parent"
                 android:text="真实姓名"
                 android:gravity="center"
-                android:textSize="20sp"/>
+                android:textSize="18sp"/>
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/auth_name"
                 android:layout_marginLeft="20dp"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:hint="请填写真实姓名"
                 android:background="@null"/>
 
@@ -109,7 +108,7 @@
                 android:layout_height="match_parent"
                 android:text="学校"
                 android:gravity="center"
-                android:textSize="20sp"/>
+                android:textSize="18sp"/>
             <Spinner
                 android:layout_marginLeft="30dp"
                 android:layout_width="wrap_content"
@@ -130,7 +129,7 @@
                 android:layout_height="match_parent"
                 android:text="学院"
                 android:gravity="center"
-                android:textSize="20sp"/>
+                android:textSize="18sp"/>
             <Spinner
                 android:layout_marginLeft="30dp"
                 android:layout_width="wrap_content"
@@ -152,13 +151,13 @@
                 android:layout_height="match_parent"
                 android:text="学号"
                 android:gravity="center"
-                android:textSize="20sp"/>
+                android:textSize="18sp"/>
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="30dp"
                 android:id="@+id/auth_st_number"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:hint="请填写学号"
                 android:background="@null"/>
 

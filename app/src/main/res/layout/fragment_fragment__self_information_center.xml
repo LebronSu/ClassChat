@@ -58,11 +58,12 @@
             android:layout_below="@+id/uesr_inform"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#CCCCCCCC" />
+            android:background="#FFF" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#FCFCFC"
             android:orientation="horizontal">
 
             <ImageView
@@ -76,8 +77,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="测试账号"
-                android:textColor="#FFFFFF"
+                android:text="0.0"
+                android:textColor="@color/theme"
                 android:textSize="15sp" />
 
             <TextView
@@ -87,7 +88,7 @@
                 android:layout_marginLeft="5dp"
                 android:gravity="center"
                 android:text=" LKB"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/theme"
                 android:textSize="15sp" />
 
             <ImageView
