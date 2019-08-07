@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/identity"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#fff"
+    android:orientation="horizontal"
+    android:layout_marginBottom="1dp">
+
+    <TextView
+        android:id="@+id/courseitem_coursename"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:padding="5dp"
+        android:text="课程名字"/>
+
+    <TextView
+        android:id="@+id/courseitem_courseplace"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:layout_toRightOf="@id/courseitem_coursename"
+        android:layout_marginLeft="5dp"
+        android:padding="5dp"
+        android:text="课程地点"/>
+
+    <TextView
+        android:id="@+id/courseitem_courseteacher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@id/courseitem_courseplace"
+        android:padding="5dp"
+        android:text="任课老师"/>
+
+    <TextView
+        android:id="@+id/courseitem_coursesigntimes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:textColor="#000000"
+        android:padding="5dp"
+        android:text="签到次数" />
+
+    <TextView
+        android:id="@+id/courseitem_courseweeks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:layout_below="@id/courseitem_coursename"
+        android:padding="5dp"
+        android:text="上课周数"/>
+
+</RelativeLayout>

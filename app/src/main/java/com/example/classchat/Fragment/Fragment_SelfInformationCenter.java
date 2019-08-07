@@ -35,6 +35,7 @@ import com.example.classchat.Activity.Activity_AboutUs;
 import com.example.classchat.Activity.Activity_AccountInfo;
 import com.example.classchat.Activity.Activity_HelpAndFeedback;
 import com.example.classchat.Activity.Activity_IdAuthentation;
+import com.example.classchat.Activity.Activity_MyWallet;
 import com.example.classchat.Activity.Activity_SearchAddCourse;
 import com.example.classchat.Activity.MainActivity;
 import com.example.classchat.R;
@@ -163,7 +164,8 @@ public class Fragment_SelfInformationCenter extends Fragment {
         linearLayoutforKecheng.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(),MainActivity.class);
+                Intent intent = new Intent(getActivity(), Activity_MyWallet.class);
+                intent.putExtra("userId",correctId);
                 startActivity(intent);
             }
         });
