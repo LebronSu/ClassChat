@@ -7,15 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.classchat.Object.Course;
 import com.example.classchat.Object.MySubject;
 import com.example.classchat.R;
 
 import java.util.List;
 
 public class Adapter_Course extends RecyclerView.Adapter<Adapter_Course.ViewHolder> {
-    private List<MySubject> mySubjectList;
+    private List<Course> mySubjectList;
 
-    public Adapter_Course(List<MySubject> mySubjects) {
+    public Adapter_Course(List<Course> mySubjects) {
         mySubjectList = mySubjects;
     }
 
@@ -29,9 +30,9 @@ public class Adapter_Course extends RecyclerView.Adapter<Adapter_Course.ViewHold
         public ViewHolder(View view) {
             super(view);
             courseName = view.findViewById(R.id.courseitem_coursename);
-            courseWeeks = view.findViewById(R.id.courseitem_courseweeks);
-            coursePlace = view.findViewById(R.id.courseitem_courseplace);
-            courseTeacher = view.findViewById(R.id.courseitem_courseteacher);
+//            courseWeeks = view.findViewById(R.id.courseitem_courseweeks);
+//            coursePlace = view.findViewById(R.id.courseitem_courseplace);
+//            courseTeacher = view.findViewById(R.id.courseitem_courseteacher);
             courseSignTimes = view.findViewById(R.id.courseitem_coursesigntimes);
         }
     }
@@ -46,12 +47,12 @@ public class Adapter_Course extends RecyclerView.Adapter<Adapter_Course.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
-        MySubject mySubject = mySubjectList.get(position);
-        viewHolder.courseName.setText(mySubject.getName());
-        viewHolder.coursePlace.setText(mySubject.getRoom());
-        viewHolder.courseTeacher.setText(mySubject.getTeacher());
-        viewHolder.courseSignTimes.setText(mySubject.getId());
-        viewHolder.courseWeeks.setText(mySubject.getWeekList().size());
+        Course myCourse = mySubjectList.get(position);
+        viewHolder.courseName.setText("课程名："+myCourse.getClassName());
+//        viewHolder.coursePlace.setText(mySubject.getRoom());
+//        viewHolder.courseTeacher.setText(mySubject.getTeacher());
+        viewHolder.courseSignTimes.setText("签到次数"+myCourse.getSignTime());
+//        viewHolder.courseWeeks.setText(mySubject.getWeekList().size());
     }
 
     @Override

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -21,6 +22,8 @@ import com.example.classchat.Adapter.Adapter_ShoppingCart;
 import com.example.classchat.Object.Object_Commodity;
 import com.example.classchat.Object.Object_Commodity_Shoppingcart;
 import com.example.classchat.R;
+import com.github.nisrulz.sensey.Sensey;
+import com.github.nisrulz.sensey.TouchTypeDetector;
 
 import org.json.JSONException;
 
@@ -149,6 +152,33 @@ public class Activity_Market_ShoppingCart extends Activity implements View.OnCli
 
         setContentView(R.layout.activity__market__shopping_cart);
 
+        TouchTypeDetector.TouchTypListener touchTypListener = new TouchTypeDetector.TouchTypListener() {
+            @Override
+            public void onDoubleTap() {}
+            @Override
+            public void onLongPress() {}
+            @Override
+            public void onScroll(int scrollDirection) {}
+            @Override
+            public void onSingleTap() {}
+            @Override
+            public void onSwipe(int swipeDirection) {
+                switch (swipeDirection) {
+                    case TouchTypeDetector.SWIPE_DIR_RIGHT:
+                        finish();
+                        Sensey.getInstance().stopTouchTypeDetection();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            @Override
+            public void onThreeFingerSingleTap() {}
+            @Override
+            public void onTwoFingerSingleTap() {}
+        };
+        Sensey.getInstance().startTouchTypeDetection(this,touchTypListener);
+
         findViews();
         try {
             showData();
@@ -245,4 +275,12 @@ public class Activity_Market_ShoppingCart extends Activity implements View.OnCli
             }
         }
     }
+
+    //用于手势监听
+    @Override public boolean dispatchTouchEvent(MotionEvent event) {
+        // Setup onTouchEvent for detecting type of touch gesture
+        Sensey.getInstance().setupDispatchTouchEvent(event);
+        return super.dispatchTouchEvent(event);
+    }
+
 }

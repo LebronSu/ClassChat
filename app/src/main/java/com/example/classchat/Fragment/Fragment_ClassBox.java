@@ -709,6 +709,12 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                     case R.id.menu_hideweekend:
                         hideWeekends();
                         break;
+                    case R.id.menu_scan:
+                        //TODO 引出扫一扫二维码的逻辑
+                        break;
+                    case R.id.menu_export:
+                        //TODO 引出生成二维码的逻辑
+                        break;
                     default:
                         break;
                 }

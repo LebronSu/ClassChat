@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.bumptech.glide.Glide;
+import com.example.classchat.Adapter.Adapter_GoodsDetail;
 import com.example.classchat.Adapter.Adapter_ShoppingCart;
 import com.example.classchat.Object.Object_Commodity;
 import com.example.classchat.Object.Object_Commodity_Shoppingcart;
@@ -61,8 +62,7 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
     private int ThumbsCount;
     private ImageView frontImage;//顶头第一张图
     NoScrollListView nlvImgs;//图片详情
-    private QuickAdapter<String> imgAdapter;
-    private List<String> imgsUrl;//商品所有图片URL列表
+
     private TextView tvGoodTitle, itemname, itemprice, iteminfo, buy, addToShoppingCart;
     private ImageView back, shoppingCart, share;
     private ThumbsUpCountView thumbs;
@@ -209,10 +209,6 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
         LinearLayout.LayoutParams params1 = (LinearLayout.LayoutParams) llOffset.getLayoutParams();
         params1.setMargins(0,-StatusBarUtil.getStatusBarHeight(this)/4,0,0);
         llOffset.setLayoutParams(params1);
-
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) frontImage.getLayoutParams();
-        params.height = getScreenHeight(this)*2/3;
-        frontImage.setLayoutParams(params);
 
         container = new ScrollViewContainer(getApplicationContext());
 
@@ -362,41 +358,8 @@ public class Activity_Market_GoodsDetail extends AppCompatActivity implements Gr
         });
 
         //TODO 图片高度有待优化!!不能很好的完全显示
-        width = getScreenWidth(getApplicationContext());
-        imgsUrl = new ArrayList<>();
-        imgsUrl.add(itemPic1);
-        imgsUrl.add(itemPic2);
-        imgsUrl.add(itemPic3);
-        imgAdapter = new QuickAdapter<String>(this,R.layout.adapter_good_detail_imgs) {
-            @Override
-            protected void convert(BaseAdapterHelper helper, String item) {
-                ImageView iv = helper.getView(R.id.iv_adapter_good_detail_img);
-                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) iv.getLayoutParams();
-                params.width = width;
-                params.height = width * 2;
-                iv.setLayoutParams(params);
-                //这个是图片加载出的宽高设置
-                MyImageLoader.getInstance().displayImageCen(getApplicationContext(),item,iv,width,width * 2);
-            }
-        };
-        imgAdapter.addAll(imgsUrl);
-        nlvImgs.setAdapter(imgAdapter);
-    }
 
-    public  int getScreenHeight(Context context) {
-        WindowManager wm = (WindowManager) context
-                .getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        wm.getDefaultDisplay().getMetrics(outMetrics);
-        return outMetrics.heightPixels;
-    }
-
-    public static int getScreenWidth(Context context) {
-        WindowManager wm = (WindowManager) context
-                .getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        wm.getDefaultDisplay().getMetrics(outMetrics);
-        return outMetrics.widthPixels;
+        nlvImgs.setAdapter(new Adapter_GoodsDetail(getApplicationContext(), item.getImageList()));
     }
 
     private void initListeners() {

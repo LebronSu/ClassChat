@@ -5,9 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Activity.Activity_MyWallet">
+    tools:context=".Activity.Activity_MyCourse">
 
-    <LinearLayout style="@style/top_nav" >
+    <LinearLayout style="@style/top_nav"
+        android:layout_marginBottom="3dp">
 
         <ImageView
             android:id="@+id/iv_mywallet_back"

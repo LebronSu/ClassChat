@@ -17,6 +17,8 @@ import android.widget.RelativeLayout;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.example.classchat.Adapter.Adapter_Course;
+import com.example.classchat.Fragment.Fragment_ClassBox;
+import com.example.classchat.Object.Course;
 import com.example.classchat.Object.MySubject;
 import com.example.classchat.R;
 import com.example.classchat.Util.Util_NetUtil;
@@ -36,10 +38,11 @@ import okhttp3.Response;
 /**
  * 这是我的课程界面
  */
-public class Activity_MyWallet extends AppCompatActivity {
+public class Activity_MyCourse extends AppCompatActivity {
 
-    private List<MySubject> courseList;
+    private List<Course> courseList;
     private String userId;
+    private String proUni;
 
     private RecyclerView recyclerView;
 
@@ -63,6 +66,8 @@ public class Activity_MyWallet extends AppCompatActivity {
 
         Intent intent = getIntent();
         userId = intent.getStringExtra("userId");
+        Fragment_ClassBox fragment_classBox = new Fragment_ClassBox();
+        proUni = fragment_classBox.getProUni();
 
         if (Build.VERSION.SDK_INT >= 21) {
             Window window = getWindow();
@@ -83,8 +88,10 @@ public class Activity_MyWallet extends AppCompatActivity {
     private void initData() {
         RequestBody requestBody = new FormBody.Builder()
                 .add("userId", userId)
+                .add("tablename", proUni)
                 .build();
-        Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8081/getallcourse", requestBody,new Callback() {
+
+        Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8081/getmycourse", requestBody,new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
 
@@ -95,12 +102,10 @@ public class Activity_MyWallet extends AppCompatActivity {
                 // 得到服务器返回的具体内容
                 String responseData = response.body().string();
                 // 转化为具体的对象列表
-                List<String> jsonlist = JSON.parseArray(responseData, String.class);
+                JSONObject jsonObject = JSON.parseObject(responseData);
 
-                courseList.clear();
-
-                for(String s : jsonlist) {
-                    MySubject mySubject = JSON.parseObject(s, MySubject.class);
+                for (String key : jsonObject.keySet()) {
+                    courseList.add(new Course(key, jsonObject.getString(key)));
                 }
 
                 Message message = new Message();

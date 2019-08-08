@@ -40,7 +40,7 @@
         <activity android:name=".Activity.Activity_AddSearchCourse" />
         <activity android:name=".Activity.Activity_AddCourse" />
         <activity android:name=".Activity.Activity_TransactionHistory" />
-        <activity android:name=".Activity.Activity_MyWallet" />
+        <activity android:name=".Activity.Activity_MyCourse" />
         <activity android:name=".Activity.Activity_AboutUs" />
         <activity android:name=".Activity.Activity_HelpAndFeedback" />
         <activity android:name=".Activity.Activity_InformationReminder" />

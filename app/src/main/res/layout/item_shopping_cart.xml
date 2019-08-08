@@ -18,7 +18,7 @@
             android:layout_gravity="center_vertical"
             android:button="@drawable/xml_checkbox_selector"
             android:checked="true"
-            android:padding="10dp"
+            android:padding="5dp"
             android:clickable="false" />
 
         <!--图片-->
@@ -27,7 +27,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:background="@drawable/ic_new_img_loading_1"
-            android:scaleType="fitXY" />
+            android:scaleType="centerCrop" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -45,23 +45,17 @@
                 android:textColor="#404040"
                 android:textSize="16sp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/tv_price_gov"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="end"
-                    android:layout_weight="1"
-                    android:gravity="end|center_vertical"
-                    android:text="LKB 0.0"
-                    android:textColor="#f00"
-                    android:textSize="28sp" />
-
-            </LinearLayout>
+            <TextView
+                android:id="@+id/tv_price_gov"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="1dp"
+                android:layout_gravity="start"
+                android:gravity="center"
+                android:text="LKB 0.0"
+                android:textColor="#f00"
+                android:textSize="15sp"
+                android:textStyle="bold"/>
         </LinearLayout>
 
 

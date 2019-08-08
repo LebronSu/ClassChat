@@ -1,15 +1,10 @@
 package com.example.classchat.Fragment;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,8 +16,6 @@ import android.view.ViewGroup;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,25 +28,21 @@ import com.example.classchat.Activity.Activity_AboutUs;
 import com.example.classchat.Activity.Activity_AccountInfo;
 import com.example.classchat.Activity.Activity_HelpAndFeedback;
 import com.example.classchat.Activity.Activity_IdAuthentation;
-import com.example.classchat.Activity.Activity_MyWallet;
-import com.example.classchat.Activity.Activity_SearchAddCourse;
+import com.example.classchat.Activity.Activity_MyCourse;
+import com.example.classchat.Activity.Activity_Option;
 import com.example.classchat.Activity.MainActivity;
 import com.example.classchat.R;
 import com.example.classchat.Util.Util_NetUtil;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
-import static android.app.Activity.RESULT_OK;
 
 
 public class Fragment_SelfInformationCenter extends Fragment {
@@ -164,7 +153,7 @@ public class Fragment_SelfInformationCenter extends Fragment {
         linearLayoutforKecheng.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), Activity_MyWallet.class);
+                Intent intent = new Intent(getActivity(), Activity_MyCourse.class);
                 intent.putExtra("userId",correctId);
                 startActivity(intent);
             }
@@ -190,7 +179,7 @@ public class Fragment_SelfInformationCenter extends Fragment {
         linearLayoutforShezhi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(),MainActivity.class);
+                Intent intent = new Intent(getActivity(), Activity_Option.class);
                 startActivity(intent);
             }
         });
@@ -235,6 +224,7 @@ public class Fragment_SelfInformationCenter extends Fragment {
                 name = jsonObject.getString("nickname");
                 imageUrl = jsonObject.getString("ico");
                 isAuthentation = Boolean.parseBoolean(jsonObject.getString("authentationstatus"));
+
                 // 向handler发送信息更新你的课程
                 Message message = new Message();
                 message.what = UPDATE;
