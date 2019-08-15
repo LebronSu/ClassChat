@@ -96,6 +96,7 @@ public class Activity_Market_MyGoods extends AppCompatActivity {
         Sensey.getInstance().startTouchTypeDetection(this,touchTypListener);
 
         back = findViewById(R.id.iv_market_my_goods_back);
+
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

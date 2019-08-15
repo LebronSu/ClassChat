@@ -2,7 +2,7 @@ package com.example.classchat.Object;
 
 public class Course {
     private String className;
-    private String signTime;
+    private Integer signTime;
 
     public String getClassName() {
         return className;
@@ -12,15 +12,15 @@ public class Course {
         this.className = className;
     }
 
-    public String getSignTime() {
+    public Integer getSignTime() {
         return signTime;
     }
 
-    public void setSignTime(String signTime) {
+    public void setSignTime(Integer signTime) {
         this.signTime = signTime;
     }
 
-    public Course(String className, String signTime) {
+    public Course(String className, Integer signTime) {
         this.className = className;
         this.signTime = signTime;
     }

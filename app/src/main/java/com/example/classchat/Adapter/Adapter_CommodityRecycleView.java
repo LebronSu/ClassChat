@@ -2,6 +2,7 @@ package com.example.classchat.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +32,7 @@ public class Adapter_CommodityRecycleView extends RecyclerView.Adapter<Adapter_C
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView itemName, itemIntroduction, itemPrice;
         public ImageView itemPic;
-        ThumbsUpCountView thumbs;
+//        ThumbsUpCountView thumbs;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -39,7 +40,7 @@ public class Adapter_CommodityRecycleView extends RecyclerView.Adapter<Adapter_C
             itemIntroduction = itemView.findViewById(R.id.tv_market_item_intro);
             itemPrice = itemView.findViewById(R.id.tv_market_item_price);
             itemPic = itemView.findViewById(R.id.iv_market_item_pic);
-            thumbs =  itemView.findViewById(R.id.market_item_thumb);
+//            thumbs =  itemView.findViewById(R.id.market_item_thumb);
         }
     }
 
@@ -60,17 +61,17 @@ public class Adapter_CommodityRecycleView extends RecyclerView.Adapter<Adapter_C
 //        //TODO 点赞设置
 
 //        //TODO 获取用户信息
-        holder.thumbs.initData(item.getThumbsUpState("17690710589"),item.getThumbsUpCount());
-        holder.thumbs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.thumbs.priseChange();
-                if(item.getThumbsUpState("17690710589"))
-                    item.removeFromThumbedList("17690710589");
-                else
-                 item.addToThumbedList("17690710589");
-            }
-        });
+//        holder.thumbs.initData(item.getThumbsUpState("17690710589"),item.getThumbsUpCount());
+//        holder.thumbs.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                holder.thumbs.priseChange();
+//                if(item.getThumbsUpState("17690710589"))
+//                    item.removeFromThumbedList("17690710589");
+//                else
+//                 item.addToThumbedList("17690710589");
+//            }
+//        });
 
         holder.itemPic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,6 +106,7 @@ public class Adapter_CommodityRecycleView extends RecyclerView.Adapter<Adapter_C
         else
             return 0;
     }
+
 
 }
 

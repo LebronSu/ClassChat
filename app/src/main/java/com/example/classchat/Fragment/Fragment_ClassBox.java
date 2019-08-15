@@ -16,12 +16,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.menu.MenuPopupHelper;
 import android.support.v7.widget.PopupMenu;
@@ -83,6 +85,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.alibaba.fastjson.JSON;
+import com.yzq.zxinglibrary.android.CaptureActivity;
+import com.yzq.zxinglibrary.bean.ZxingConfig;
+import com.yzq.zxinglibrary.common.Constant;
+import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -135,6 +141,7 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     Activity_TimetableView mTimetableView;
     WeekView mWeekView;
     ImageButton moreButton;
+    ImageButton scanButton;
     LinearLayout layout;
     TextView titleTextView;
     List<MySubject> mySubjects = new ArrayList<MySubject>();
@@ -187,6 +194,8 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
 
     private Context mcontext;
 
+
+    private ImageView qrcode;
     /*
     设置handler接收网络线程的信号并处理
      */
@@ -249,6 +258,23 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                 case 8:
                     Toast.makeText(getContext(),"签到失败" ,Toast.LENGTH_SHORT).show();
                     break;
+                case 9:
+                    //这里需要向服务器发出这些课程，服务器再返回合格的mysubjects
+                    RequestBody requestBody1 = new FormBody.Builder()
+                            .add("userId", userId)
+                            .add("subjects", JSON.toJSONString(mySubjects))
+                            .add("tablename" , proUni)
+                            .build();
+                    Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8081/autoupdatecourse", requestBody1, new okhttp3.Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+                        }
+
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        }
+                    });
                 default:
                     break;
             }
@@ -274,6 +300,7 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
         proUni = mainActivity.getProUni();
         token = mainActivity.getToken();
         imageUrl = mainActivity.getImageUrl();
+        scanButton = getActivity().findViewById(R.id.id_scan);
         moreButton =(ImageButton)getActivity().findViewById(R.id.id_more);
         moreButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -281,6 +308,35 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                 showPopmenu();
             }
         });
+        scanButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO 这里面写扫一扫的逻辑
+                if (!isAuthentation) {
+                    Toast.makeText(getContext(), "请先实名认证！", Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent intent = new Intent(getContext(), CaptureActivity.class);
+                    /*ZxingConfig是配置类
+                     *可以设置是否显示底部布局，闪光灯，相册，
+                     * 是否播放提示音  震动
+                     * 设置扫描框颜色等
+                     * 也可以不传这个参数
+                     * */
+                    ZxingConfig config = new ZxingConfig();
+                    config.setPlayBeep(true);//是否播放扫描声音 默认为true
+                    config.setShake(true);//是否震动  默认为true
+                    config.setDecodeBarCode(true);//是否扫描条形码 默认为true
+                    config.setReactColor(R.color.colorAccent);//设置扫描框四个角的颜色 默认为白色
+                    config.setFrameLineColor(R.color.colorAccent);//设置扫描框边框颜色 默认无色
+                    config.setScanLineColor(R.color.colorAccent);//设置扫描线的颜色 默认白色
+                    config.setFullScreenScan(true);//是否全屏扫描  默认为true  设为false则只会在扫描框中扫描
+                    intent.putExtra(Constant.INTENT_ZXING_CONFIG, config);
+                    startActivityForResult(intent, 3);
+                }
+            }
+        });
+
+
 
         titleTextView = (TextView)getActivity().findViewById(R.id.id_title);
         layout = (LinearLayout)getActivity().findViewById(R.id.id_layout);
@@ -318,9 +374,9 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
     private void initClassBoxData(){
 
 
-        Cache.with(myContext.getActivity())
-                .path(getCacheDir(myContext.getActivity()))
-                .remove("classBox");
+//        Cache.with(myContext.getActivity())
+//                .path(getCacheDir(myContext.getActivity()))
+//                .remove("classBox");
 
         mClassBoxData = Cache.with(this.getActivity())
                 .path(getCacheDir(this.getActivity()))
@@ -453,18 +509,24 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
 
                     }
                 })
-                .callback(new ISchedule.OnItemLongClickListener() {
-                    @Override
-                    public void onLongClick(View v, int day, int start) {
-                        Toast.makeText(getActivity(),
-                                "长按:周" + day  + ",第" + start + "节",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                })
                 .callback(new ISchedule.OnWeekChangedListener() {
                     @Override
                     public void onWeekChanged(int curWeek) {
                         titleTextView.setText("第" + curWeek + "周");
+                    }
+                })
+                .callback(new ISchedule.OnItemLongClickListener() {
+                    @Override
+                    public void onLongClick(View v, int day, int start) {
+                        Log.d(TAG, "onLongClick: + " + mClassBoxData);
+                        Bitmap bitmap = CodeCreator.createQRCode("http://106.12.105.160:8081/getallcourse?userId=" + userId, 700, 700, null);
+                        LayoutInflater inflater=LayoutInflater.from(getContext());
+                        View xxview=inflater.inflate(R.layout.fragment_qrcodeshowdialog,null);
+                        final AlertDialog.Builder builder=new AlertDialog.Builder(getContext());
+                        qrcode = xxview.findViewById(R.id.iv_qrcode);
+                        qrcode.setImageBitmap(bitmap);
+                        builder.setView(xxview);
+                        builder.create().show();
                     }
                 })
 //                //旗标布局点击监听
@@ -618,12 +680,15 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
             @Override
             public void onClick(View v) {
                 //TODO 点击后展示这门课的内容
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                File file = new File(Environment.DIRECTORY_DOWNLOADS);
-                Uri uri =FileProvider.getUriForFile(getContext() , "com.example.classchat.FileProvider" , file);
-                intent.setDataAndType(uri , "file/*.*");
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                getContext().startActivity(intent);
+                String path = Environment.getExternalStorageDirectory() + "/RongCloud/Media";
+                File file= new File(path);
+                Uri fileURI = FileProvider.getUriForFile(getActivity(), "com.example.classchat.FileProvider", file);
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.setDataAndType(fileURI, "file/*");
+                Uri originalUri = Uri.parse("content://com.android.externalstorage.documents/tree/primary%3ARongCloud%2FMedia");
+                DocumentFile docFile = DocumentFile.fromTreeUri(getActivity(), originalUri);
+                intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, docFile.getUri());
+                startActivity(intent);
             }
         });
 
@@ -708,12 +773,6 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                         break;
                     case R.id.menu_hideweekend:
                         hideWeekends();
-                        break;
-                    case R.id.menu_scan:
-                        //TODO 引出扫一扫二维码的逻辑
-                        break;
-                    case R.id.menu_export:
-                        //TODO 引出生成二维码的逻辑
                         break;
                     default:
                         break;
@@ -1130,6 +1189,57 @@ public class Fragment_ClassBox extends Fragment implements OnClickListener {
                         e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
+                    }
+                }
+            case 3:
+                if (resultCode == RESULT_OK) {
+                    if (data != null) {
+                        String content = data.getStringExtra(Constant.CODED_CONTENT);
+
+                        Util_NetUtil.sendOKHTTPRequest(content, new Callback() {
+                            @Override
+                            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+                            }
+
+                            @Override
+                            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                                // 得到服务器返回的具体内容
+                                String responseData = response.body().string();
+                                System.out.println(responseData);
+                                mClassBoxData = responseData;
+                                // 转化为具体的对象列表
+                                List<String> jsonlist = JSON.parseArray(responseData, String.class);
+                                mySubjects.clear();
+                                for(String s : jsonlist) {
+                                    MySubject mySubject = JSON.parseObject(s, MySubject.class);
+                                    mySubjects.add(mySubject);
+                                }
+                                //获得数据后存入缓存
+                                Cache.with(myContext.getActivity())
+                                        .path(getCacheDir(myContext.getActivity()))
+                                        .remove("classBox");
+
+                                Cache.with(myContext.getActivity())
+                                        .path(getCacheDir(myContext.getActivity()))
+                                        .saveCache("classBox", mClassBoxData);
+
+                                // 获取课程id 和未读消息数的 Key Value 关系
+                                groupChatManager = getGroupChatManager(mySubjects);
+
+                                Message message = new Message();
+                                message.what = 1;
+                                handler.sendMessage(message);
+
+                                Message message1 = new Message();
+                                message1.what = 9;
+                                handler.sendMessage(message1);
+
+                                // 发送登录聊天的广播
+                                Intent intent2 = new Intent("com.example.broadcasttest.LOCAL_BROADCAST2");
+                                localBroadcastManager.sendBroadcast(intent2);
+                            }
+                        });
                     }
                 }
                 break;

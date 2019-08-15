@@ -7,18 +7,24 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.classchat.R;
 
+import okhttp3.FormBody;
+import okhttp3.RequestBody;
+
 public class Activity_Option extends AppCompatActivity {
     private ImageView back;
+    private Switch aSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_option);
 
+        aSwitch = findViewById(R.id.option_switch_newMessage);
         back = findViewById(R.id.iv_option_back);
 
         // 设置沉浸式状态栏

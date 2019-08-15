@@ -39,17 +39,16 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_marginTop="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#fff">
         <Switch
+            android:id="@+id/option_switch_newMessage"
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:gravity="start|center"
             android:text="        接收新消息提醒"
             android:textColor="@color/theme"
-            android:textFontWeight="20sp"
             android:padding="8dp"
             android:layout_alignParentRight="true"
             android:checked="true"
@@ -66,27 +65,6 @@
         android:layout_height="wrap_content"
         android:background="#fff"
         android:orientation="vertical">
-        <Switch
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:gravity="start|center"
-            android:text="        通知显示消息详情"
-            android:textColor="@color/theme"
-            android:textFontWeight="20sp"
-            android:padding="8dp"
-            android:layout_alignParentRight="true"
-            android:checked="true"
-            android:layout_marginRight="10dp"
-            android:background="#fff"
-            android:thumb="@drawable/thumb"
-            android:track="@drawable/switch_track"
-            android:textSize="14sp" />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="      关闭后，当收到消息时，通知将不显示发送人和内容摘要。"
-            android:textSize="10sp"
-            android:layout_marginBottom="5dp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -101,7 +79,6 @@
             android:gravity="start|center"
             android:text="        声音"
             android:textColor="@color/theme"
-            android:textFontWeight="20sp"
             android:padding="8dp"
             android:layout_alignParentRight="true"
             android:checked="true"
@@ -116,32 +93,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#fff">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:gravity="start|center"
-            android:text="        消息提示音"
-            android:textColor="@color/theme"
-            android:textFontWeight="20sp"
-            android:padding="8dp"
-            android:layout_alignParentRight="true"
-            android:checked="true"
-            android:layout_marginRight="10dp"
-            android:background="#fff"
-            />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#fff">
         <Switch
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:gravity="start|center"
             android:text="        振动"
             android:textColor="@color/theme"
-            android:textFontWeight="20sp"
             android:padding="8dp"
             android:layout_alignParentRight="true"
             android:checked="true"

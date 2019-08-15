@@ -5,11 +5,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.DocumentsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
+import android.support.v4.provider.DocumentFile;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,9 +38,12 @@ import com.example.classchat.Activity.Activity_Option;
 import com.example.classchat.Activity.MainActivity;
 import com.example.classchat.R;
 import com.example.classchat.Util.Util_NetUtil;
+import com.example.classchat.Util.Util_ToastUtils;
+import com.sdsmdg.tastytoast.TastyToast;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -67,15 +75,16 @@ public class Fragment_SelfInformationCenter extends Fragment {
     private Double money;
     private String imageUrl;
     private Boolean isAuthentation;
+    private String proUni;
 
     private final static int UPDATE = 100;
 
     //handler处理反应回来的信息
     @SuppressLint("HandlerLeak")
-    public Handler handler = new Handler(){
+    public Handler handler = new Handler() {
         @Override
-        public void handleMessage(Message msg){
-            switch (msg.what){
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
                 case UPDATE:
                     textViewforId.setText(correctId);
                     textViewforName.setText(name);
@@ -87,29 +96,30 @@ public class Fragment_SelfInformationCenter extends Fragment {
 
     @SuppressLint("ResourceAsColor")
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        avatarImageView=view.findViewById(R.id.user_head);
+        avatarImageView = view.findViewById(R.id.user_head);
 
-        linearLayoutforAnquan=view.findViewById(R.id.anquan);
-        linearLayoutforBangzhu=view.findViewById(R.id.bangzhuyufankui);
-        linearLayoutforGuanyu=view.findViewById(R.id.aboutus);
-        linearLayoutforKecheng=view.findViewById(R.id.kecheng);
-        linearLayoutforRenzheng=view.findViewById(R.id.shimingrenzheng);
-        linearLayoutforShezhi=view.findViewById(R.id.shezhi);
-        linearLayoutforShoucang=view.findViewById(R.id.shoucang);
+        linearLayoutforAnquan = view.findViewById(R.id.anquan);
+        linearLayoutforBangzhu = view.findViewById(R.id.bangzhuyufankui);
+        linearLayoutforGuanyu = view.findViewById(R.id.aboutus);
+        linearLayoutforKecheng = view.findViewById(R.id.kecheng);
+        linearLayoutforRenzheng = view.findViewById(R.id.shimingrenzheng);
+        linearLayoutforShezhi = view.findViewById(R.id.shezhi);
+        linearLayoutforShoucang = view.findViewById(R.id.shoucang);
 
-        textViewforId=view.findViewById(R.id.user_stuID);
-        textViewforMoney=view.findViewById(R.id.user_money);
-        textViewforName=view.findViewById(R.id.user_name);
+        textViewforId = view.findViewById(R.id.user_stuID);
+        textViewforMoney = view.findViewById(R.id.user_money);
+        textViewforName = view.findViewById(R.id.user_name);
 
         //获得用户ID
-        MainActivity activity = (MainActivity)getActivity();
+        MainActivity activity = (MainActivity) getActivity();
         correctId = activity.getId();
         name = activity.getNickName();
         imageUrl = activity.getImageUrl();
         isAuthentation = activity.getAuthentation();
+        proUni = activity.getProUni();
 
         //加载数据和图片
         textViewforId.setText(correctId);
@@ -154,7 +164,8 @@ public class Fragment_SelfInformationCenter extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), Activity_MyCourse.class);
-                intent.putExtra("userId",correctId);
+                intent.putExtra("userId", correctId);
+                intent.putExtra("proUni", proUni);
                 startActivity(intent);
             }
         });
@@ -162,18 +173,17 @@ public class Fragment_SelfInformationCenter extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), Activity_IdAuthentation.class);
-                intent.putExtra("userId",correctId);
-                if(!isAuthentation)
+                intent.putExtra("userId", correctId);
+                if (!isAuthentation)
                     startActivity(intent);
                 else
-                    Toast.makeText(getActivity(),"您已经实名认证过了",Toast.LENGTH_SHORT).show();
+                    Util_ToastUtils.showToast(getActivity(), "您已经实名认证过了");
             }
         });
         linearLayoutforShoucang.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(),MainActivity.class);
-                startActivity(intent);
+                openFile();
             }
         });
         linearLayoutforShezhi.setOnClickListener(new View.OnClickListener() {
@@ -188,7 +198,7 @@ public class Fragment_SelfInformationCenter extends Fragment {
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return  inflater.inflate(R.layout.fragment_fragment__self_information_center, container, false);
+        return inflater.inflate(R.layout.fragment_fragment__self_information_center, container, false);
     }
 
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -198,7 +208,7 @@ public class Fragment_SelfInformationCenter extends Fragment {
     /*
     接收到更新广播之后，界面如何处理
      */
-    class UpdateAccountInfoReceiver extends BroadcastReceiver{
+    class UpdateAccountInfoReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -207,7 +217,10 @@ public class Fragment_SelfInformationCenter extends Fragment {
     }
 
     // 取得用户信息方法
-    private void getUserInfo() {
+    private
+
+
+    void getUserInfo() {
         RequestBody requestBody = new FormBody.Builder()
                 .add("userId", correctId)
                 .build();
@@ -224,7 +237,7 @@ public class Fragment_SelfInformationCenter extends Fragment {
                 name = jsonObject.getString("nickname");
                 imageUrl = jsonObject.getString("ico");
                 isAuthentation = Boolean.parseBoolean(jsonObject.getString("authentationstatus"));
-
+                proUni = jsonObject.getString("university") + "_" + jsonObject.getString("school");
                 // 向handler发送信息更新你的课程
                 Message message = new Message();
                 message.what = UPDATE;
@@ -234,4 +247,15 @@ public class Fragment_SelfInformationCenter extends Fragment {
         });
     }
 
+    private void openFile() {
+        String path = Environment.getExternalStorageDirectory() + "/RongCloud/Media";
+        File file= new File(path);
+        Uri fileURI = FileProvider.getUriForFile(getActivity(), "com.example.classchat.FileProvider", file);
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.setDataAndType(fileURI, "file/*");
+        Uri originalUri = Uri.parse("content://com.android.externalstorage.documents/tree/primary%3ARongCloud%2FMedia");
+        DocumentFile docFile = DocumentFile.fromTreeUri(getActivity(), originalUri);
+        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, docFile.getUri());
+        startActivity(intent);
+    }
 }

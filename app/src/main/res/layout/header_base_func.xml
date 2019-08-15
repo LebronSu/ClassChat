@@ -28,6 +28,16 @@
     </LinearLayout>
 
     <ImageButton
+        android:layout_margin="8dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/id_more"
+        android:id="@+id/id_scan"
+        android:background="@drawable/icon_timetable_fragment"
+        />
+
+    <ImageButton
         android:id="@+id/id_more"
         android:text="功能"
         android:layout_centerVertical="true"

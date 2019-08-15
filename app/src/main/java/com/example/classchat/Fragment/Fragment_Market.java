@@ -476,4 +476,5 @@ public class Fragment_Market extends Fragment {
             }
         });
     }
+
 }

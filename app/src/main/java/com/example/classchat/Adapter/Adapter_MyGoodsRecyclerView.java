@@ -143,7 +143,7 @@ public class Adapter_MyGoodsRecyclerView extends RecyclerView.Adapter<Adapter_My
                         holder.delete.setVisibility(View.GONE);
                         holder.edit.setVisibility(View.VISIBLE);
                         holder.itemPrice.setEnabled(false);
-                        Object_Commodity object_commodity = new Object_Commodity(item.getItemID(), item.getItemID(), item.getImageList(), item.getOwnerID(), Double.valueOf(holder.itemPrice.getText().toString()), item.getBriefIntroduction(), item.getDetailIntroduction(), item.getThumbedList());
+                        Object_Commodity object_commodity = new Object_Commodity(item.getItemID(), item.getItemName(), item.getImageList(), item.getOwnerID(), Double.valueOf(holder.itemPrice.getText().toString()), item.getBriefIntroduction(), item.getDetailIntroduction(), item.getThumbedList());
                         String jsonstring = JSON.toJSONString(object_commodity);
                         RequestBody requestBody = new FormBody.Builder()
                                 .add("itemID", item.getItemID())

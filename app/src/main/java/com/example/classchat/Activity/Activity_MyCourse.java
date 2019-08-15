@@ -10,8 +10,11 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.alibaba.fastjson.JSON;
@@ -27,6 +30,7 @@ import com.example.library_cache.Cache;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
@@ -45,7 +49,9 @@ public class Activity_MyCourse extends AppCompatActivity {
     private String proUni;
 
     private RecyclerView recyclerView;
+    private ImageView back;
 
+    private static final String TAG = "Activity_MyCourse";
 
     @SuppressLint("HandlerLeak")
     public Handler handler = new Handler() {
@@ -66,8 +72,7 @@ public class Activity_MyCourse extends AppCompatActivity {
 
         Intent intent = getIntent();
         userId = intent.getStringExtra("userId");
-        Fragment_ClassBox fragment_classBox = new Fragment_ClassBox();
-        proUni = fragment_classBox.getProUni();
+        proUni = intent.getStringExtra("proUni");
 
         if (Build.VERSION.SDK_INT >= 21) {
             Window window = getWindow();
@@ -78,14 +83,25 @@ public class Activity_MyCourse extends AppCompatActivity {
             window.setStatusBarColor(getResources().getColor(R.color.theme));
         }
 
+        courseList = new ArrayList<>();
+
         initData();
 
         recyclerView = findViewById(R.id.rl_course);
+        back = findViewById(R.id.iv_mywallet_back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
     }
 
     private void initData() {
+        courseList.clear();
+
         RequestBody requestBody = new FormBody.Builder()
                 .add("userId", userId)
                 .add("tablename", proUni)
@@ -105,7 +121,7 @@ public class Activity_MyCourse extends AppCompatActivity {
                 JSONObject jsonObject = JSON.parseObject(responseData);
 
                 for (String key : jsonObject.keySet()) {
-                    courseList.add(new Course(key, jsonObject.getString(key)));
+                    courseList.add(new Course(key, jsonObject.getIntValue(key)));
                 }
 
                 Message message = new Message();
