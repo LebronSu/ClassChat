@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -29,11 +30,15 @@ import java.io.IOException;
 import cn.smssdk.EventHandler;
 import cn.smssdk.SMSSDK;
 import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class Activity_Register extends AppCompatActivity implements View.OnClickListener {
+
+    private static final String TAG = "Activity_Register";
+
     private EditText editTextP, editSMS, editTextCT;
     private Button button;
     private TimingButton SMSBtn;
@@ -87,6 +92,7 @@ public class Activity_Register extends AppCompatActivity implements View.OnClick
                             // 请注意，此时只是完成了发送验证码的请求，验证码短信还需要几秒钟之后才送达
                         } else {
                             // 处理错误的结果
+                            Log.d(TAG, "handleMessage: " + result);
                             editSMS.setText(null);
                             Toast.makeText(Activity_Register.this, "验证码服务出错，请稍后再试试？", Toast.LENGTH_SHORT).show();
                             ((Throwable) data).printStackTrace();
@@ -103,7 +109,7 @@ public class Activity_Register extends AppCompatActivity implements View.OnClick
                                     .add("password", editTextCT.getText().toString())
                                     .build();   //构建请求体
 
-                            Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8081/register", requestBody, new okhttp3.Callback() {
+                            Util_NetUtil.sendOKHTTPRequest("http://106.12.105.160:8081/register", requestBody, new Callback() {
                                 @Override
                                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                                     // 得到服务器返回的具体内容

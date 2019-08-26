@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -50,6 +51,7 @@ public class Activity_AutoPullCourseFromWeb extends AppCompatActivity {
     //广播
     private LocalBroadcastManager localBroadcastManager;
     //handler处理反应回来的信息
+    private static final String TAG = "Activity_AutoPullCourse";
     @SuppressLint("HandlerLeak")
     public Handler handler = new Handler(){
         @Override
@@ -87,7 +89,7 @@ public class Activity_AutoPullCourseFromWeb extends AppCompatActivity {
                                 MySubject subject = new MySubject();
                                 //获取课程名称
                                 subject.setName(course.getString("kcmc"));
-
+                                Log.d(TAG, "onResponse: " + subject.getName());
                                 //获取课程代码
                                 subject.setId(course.getString("kch_id"));
 
@@ -110,10 +112,10 @@ public class Activity_AutoPullCourseFromWeb extends AppCompatActivity {
 
                             }
                             // 向数据库发送待调整的mysubjects
+                            Log.d(TAG, "onResponse: " + mysubjects);
                             Message message = new Message();
                             message.what = 2;
                             handler.sendMessage(message);
-
                         }
                     });
                     break;
@@ -227,9 +229,17 @@ public class Activity_AutoPullCourseFromWeb extends AppCompatActivity {
 
         String[] originList = data.split(",");
         for(int i =0 ; i <originList.length ; i++){
+            int start;
+            int end;
             String[]  s = originList[i].split("周");
-            int start = Integer.parseInt(s[0].split("-")[0]);
-            int end = Integer.parseInt(s[0].split("-")[1]);
+            if(s[0].split("-").length > 1){
+                start = Integer.parseInt(s[0].split("-")[0]);
+                end = Integer.parseInt(s[0].split("-")[1]);
+            }else {
+                start = Integer.parseInt(s[0]);
+                end = Integer.parseInt(s[0]);
+            }
+
             if(s.length > 1){
                 for(int j = start ; j <= end ; j+=2 ){
                     weekList.add(j);

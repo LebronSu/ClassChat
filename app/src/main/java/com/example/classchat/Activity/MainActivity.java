@@ -283,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
                             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
                             //Then call setStatusBarColor.
                             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                            window.setStatusBarColor(getResources().getColor(R.color.forum_gray));
+                            window.setStatusBarColor(getResources().getColor(R.color.theme));
                         }
                         setFragmentPosition(1);
                         break;
